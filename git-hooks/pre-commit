@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Determine the operating system
+if [[ "$OSTYPE" == "linux-gnu" || "$OSTYPE" == "darwin"* ]]; then
+    # Run the pg_dump script for Unix-like systems
+    sh pg_dump.sh
+elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+    # Run the pg_dump script for Windows
+    ./pg_dump.bat
+else
+    echo "Unsupported operating system: $OSTYPE"
+    exit 1
+fi
+
+# Add the generated SQL dump to the staging area
+git add db/setup-script/setup-db.sql
+
+# Continue with the commit
+exit 0

@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    container_name: ${DB_CONTAINER_NAME}
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - /var/dumps
+      - ./db/backups/:/docker-entrypoint-initdb.d/
+      - ./db/data:/var/lib/postgresql/data # make db data persistent
+    ports:
+      - ${DB_PORT}:5432  # Map container's 5432 to host's 5432
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - ${ADMINER_PORT}:8080
