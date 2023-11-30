@@ -3,7 +3,7 @@
 # Determine the operating system
 if [[ "$OSTYPE" == "linux-gnu" || "$OSTYPE" == "darwin"* ]]; then
     # Run the pg_dump script for Unix-like systems
-    sh pg_dump.sh
+    sh create-db-script.sh
 elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
     # Run the pg_dump script for Windows
     ./pg_dump.bat
