@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 16.0 (Debian 16.0-1.pgdg120+1)
--- Dumped by pg_dump version 16.0 (Debian 16.0-1.pgdg120+1)
+-- Dumped from database version 16.1 (Debian 16.1-1.pgdg120+1)
+-- Dumped by pg_dump version 16.1 (Debian 16.1-1.pgdg120+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -279,6 +279,7 @@ COPY public.tags (id, name) FROM stdin;
 --
 
 COPY public.users (id, username, firstname, lastname, password, email, signup_date) FROM stdin;
+1	luis8h	Luis	Schmidmeister	test	vzbls@t-online.de	2023-12-10 14:56:40.293945
 \.
 
 
@@ -314,7 +315,7 @@ SELECT pg_catalog.setval('public.tags_id_seq', 1, false);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 1, false);
+SELECT pg_catalog.setval('public.users_id_seq', 1, true);
 
 
 --
@@ -355,6 +356,22 @@ ALTER TABLE ONLY public.tags
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: recipes fk_created_by_user; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.recipes
+    ADD CONSTRAINT fk_created_by_user FOREIGN KEY (created_by) REFERENCES public.users(id);
+
+
+--
+-- Name: recipes fk_edited_by_user; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.recipes
+    ADD CONSTRAINT fk_edited_by_user FOREIGN KEY (edited_by) REFERENCES public.users(id);
 
 
 --
