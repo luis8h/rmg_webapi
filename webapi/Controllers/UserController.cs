@@ -14,9 +14,9 @@ namespace webapi.Controllers
         }
 
         [HttpGet("list")]
-        public ActionResult<IEnumerable<User>> GetUsers()
+        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            List<User> users = _uow.UserRepository.GetUsers();
+            var users = await _uow.UserRepository.GetUsers();
             return Ok(users);
         }
     }

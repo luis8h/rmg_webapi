@@ -1,3 +1,4 @@
+using Npgsql;
 using webapi.Data;
 using webapi.Interfaces;
 
@@ -10,7 +11,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// register UnitOfWork to work as main controller
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// configure db connection
+var connectionString = builder.Configuration.GetConnectionString("default");
+builder.Services.AddScoped<NpgsqlConnection>(_ => new NpgsqlConnection(connectionString));
 
 var app = builder.Build();
 

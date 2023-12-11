@@ -4,6 +4,6 @@ namespace webapi.Interfaces
 {
     public interface IUserRepository
     {
-        List<User> GetUsers();
+        Task<List<User>> GetUsers();
     }
 }

@@ -6,36 +6,39 @@ namespace webapi.Data.Repo
 {
     public class UserRepository : IUserRepository
     {
-        string connString = "Server=localhost; Port=5435; Database=rmg_db; User Id=postgres; Password=test;";
+        private readonly NpgsqlConnection _dbConnection;
 
-        public List<User> GetUsers()
+        public UserRepository(NpgsqlConnection dbConnection)
+        {
+            _dbConnection = dbConnection;
+        }
+
+        public async Task<List<User>> GetUsers()
         {
             List<User> list = new List<User>();
             string query = "SELECT id, firstname, lastname, username, email FROM users";
 
-            using (NpgsqlConnection con = new NpgsqlConnection(connString))
+            await _dbConnection.OpenAsync();
+            await using var command = new NpgsqlCommand(query, _dbConnection);
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
             {
-                con.Open();
-                using (NpgsqlCommand cmd = new NpgsqlCommand(query, con))
-                {
-                    using (NpgsqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
+                list.Add(new User
                         {
-                            list.Add(new User
-                            {
-                                Id = Convert.ToInt32(reader[0]),
-                                Firstname = Convert.ToString(reader[1]),
-                                Lastname = Convert.ToString(reader[2]),
-                                Username = Convert.ToString(reader[3]),
-                                Email = Convert.ToString(reader[4])
-                            });
-                        }
-                    }
-                }
+                        Id = Convert.ToInt32(reader["id"]),
+                        Firstname = reader["firstname"].ToString(),
+                        Lastname = reader["lastname"].ToString(),
+                        Username = reader["username"].ToString(),
+                        Email = reader["email"].ToString()
+                        });
             }
+
+            await _dbConnection.CloseAsync();
+
             return list;
         }
+
     }
 }
 
