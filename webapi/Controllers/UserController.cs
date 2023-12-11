@@ -1,23 +1,22 @@
 using Microsoft.AspNetCore.Mvc;
+using webapi.Interfaces;
 using webapi.Models;
 
 namespace webapi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : BaseController
     {
-        private readonly ContextDb _context;
+        private readonly IUnitOfWork _uow;
 
-        public UserController()
+        public UserController(IUnitOfWork uow)
         {
-            _context = new ContextDb(); // Assuming ContextDb has been properly configured
+            this._uow = uow;
         }
 
-        [HttpGet]
-        public ActionResult<IEnumerable<User>> Get()
+        [HttpGet("list")]
+        public ActionResult<IEnumerable<User>> GetUsers()
         {
-            List<User> users = _context.GetUsers();
+            List<User> users = _uow.UserRepository.GetUsers();
             return Ok(users);
         }
     }
