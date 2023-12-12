@@ -9,6 +9,7 @@ namespace webapi.Data
         private readonly NpgsqlConnection _dbConnection;
 
         public IUserRepository UserRepository => new UserRepository(_dbConnection);
+        public IRecipeRepository RecipeRepository => new RecipeRepository(_dbConnection);
 
         public UnitOfWork(NpgsqlConnection dbConnection)
         {

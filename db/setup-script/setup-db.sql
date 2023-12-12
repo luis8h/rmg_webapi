@@ -263,6 +263,9 @@ COPY public.recipe_tags (id, tag, recipe) FROM stdin;
 --
 
 COPY public.recipes (id, name, description, preptime, cooktime, worktime, difficulty, created_at, created_by, edited_at, edited_by) FROM stdin;
+1	Test Rezept	Das ist ein simples Test Rezept	30	12	42	3	2023-12-12 19:17:10.790286	1	2023-12-12 19:17:10.790286	1
+2	Test 2	Ein zweites Testrezept	8	40	10	2	2023-12-12 19:20:44.417077	1	\N	\N
+3	3. Test	Nochmal ein Test einfach	\N	\N	\N	8	2023-12-12 19:23:48.99739	1	\N	\N
 \.
 
 
@@ -301,7 +304,7 @@ SELECT pg_catalog.setval('public.recipe_tags_id_seq', 1, false);
 -- Name: recipes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.recipes_id_seq', 1, false);
+SELECT pg_catalog.setval('public.recipes_id_seq', 3, true);
 
 
 --
