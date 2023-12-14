@@ -14,6 +14,9 @@ builder.Services.AddSwaggerGen();
 // register UnitOfWork to work as main controller
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+// user cors for access control (allow all access)
+builder.Services.AddCors();
+
 // configure db connection
 var connectionString = builder.Configuration.GetConnectionString("default");
 builder.Services.AddScoped<NpgsqlConnection>(_ => new NpgsqlConnection(connectionString));
@@ -25,7 +28,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors(m => m.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 }
+
 
 app.UseHttpsRedirection();
 
