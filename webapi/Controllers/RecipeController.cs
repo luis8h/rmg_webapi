@@ -19,5 +19,13 @@ namespace webapi.Controllers
             var recipe = await _uow.RecipeRepository.GetRecipes();
             return Ok(recipe);
         }
+
+        [HttpPost("add")]
+        public async Task<IActionResult> AddRecipe(Recipe recipe)
+        {
+            await _uow.RecipeRepository.AddRecipe(recipe);
+            // await uow.SaveAsync();
+            return StatusCode(201);
+        }
     }
 }

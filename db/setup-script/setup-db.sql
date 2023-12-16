@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 16.0 (Debian 16.0-1.pgdg120+1)
--- Dumped by pg_dump version 16.0 (Debian 16.0-1.pgdg120+1)
+-- Dumped from database version 16.1 (Debian 16.1-1.pgdg120+1)
+-- Dumped by pg_dump version 16.1 (Debian 16.1-1.pgdg120+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -103,7 +103,7 @@ CREATE TABLE public.recipes (
     cooktime integer,
     worktime integer,
     difficulty integer,
-    created_at timestamp without time zone NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     created_by integer NOT NULL,
     edited_at timestamp without time zone,
     edited_by integer
@@ -266,6 +266,11 @@ COPY public.recipes (id, name, description, preptime, cooktime, worktime, diffic
 1	Test Rezept	Das ist ein simples Test Rezept	30	12	42	3	2023-12-12 19:17:10.790286	1	2023-12-12 19:17:10.790286	1
 2	Test 2	Ein zweites Testrezept	8	40	10	2	2023-12-12 19:20:44.417077	1	\N	\N
 3	3. Test	Nochmal ein Test einfach	\N	\N	\N	8	2023-12-12 19:23:48.99739	1	\N	\N
+4	Luis	\N	\N	\N	\N	\N	2023-12-16 13:26:18.004172	1	\N	\N
+5	string	\N	\N	\N	\N	\N	2023-12-16 13:26:57.474611	1	\N	\N
+6	Luis	\N	\N	\N	\N	\N	2023-12-16 13:29:35.936688	1	\N	\N
+7	Luis	\N	\N	\N	\N	\N	2023-12-16 13:32:42.185949	1	\N	\N
+8	Timo	\N	\N	\N	\N	\N	2023-12-16 13:33:09.971746	1	\N	\N
 \.
 
 
@@ -304,7 +309,7 @@ SELECT pg_catalog.setval('public.recipe_tags_id_seq', 1, false);
 -- Name: recipes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.recipes_id_seq', 3, true);
+SELECT pg_catalog.setval('public.recipes_id_seq', 8, true);
 
 
 --

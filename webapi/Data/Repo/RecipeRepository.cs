@@ -37,6 +37,23 @@ namespace webapi.Data.Repo
             return list;
         }
 
+        public async Task<int> AddRecipe(Recipe recipe)
+        {
+            string query = "INSERT INTO recipes (name, created_by) VALUES (@name, @created_by)";
+
+            await _dbConnection.OpenAsync();
+
+            await using var command = new NpgsqlCommand(query, _dbConnection);
+
+            command.Parameters.AddWithValue("name", recipe.Name);
+            command.Parameters.AddWithValue("created_by", 1);
+
+            await command.ExecuteScalarAsync();
+
+            await _dbConnection.CloseAsync();
+
+            return 1;
+        }
     }
 }
 
