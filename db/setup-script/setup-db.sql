@@ -271,6 +271,20 @@ COPY public.recipes (id, name, description, preptime, cooktime, worktime, diffic
 6	Luis	\N	\N	\N	\N	\N	2023-12-16 13:29:35.936688	1	\N	\N
 7	Luis	\N	\N	\N	\N	\N	2023-12-16 13:32:42.185949	1	\N	\N
 8	Timo	\N	\N	\N	\N	\N	2023-12-16 13:33:09.971746	1	\N	\N
+9	wtf	\N	\N	\N	\N	\N	2023-12-17 09:33:00.598094	1	\N	\N
+10	testst v3	\N	\N	\N	\N	\N	2023-12-17 09:39:53.783866	1	\N	\N
+11	testv4	\N	\N	\N	\N	\N	2023-12-17 09:43:12.477511	1	\N	\N
+12		\N	\N	\N	\N	\N	2023-12-17 10:53:32.146252	1	\N	\N
+13	wtfv2	\N	\N	\N	\N	\N	2023-12-17 11:13:29.697942	1	\N	\N
+14	wtfv2	\N	\N	\N	\N	\N	2023-12-17 11:14:39.272082	1	\N	\N
+15	wtfv3	\N	\N	\N	\N	\N	2023-12-17 11:15:43.414608	1	\N	\N
+16	wtfv3	\N	\N	\N	\N	\N	2023-12-17 11:27:54.915459	1	\N	\N
+17	wtfv3		0	5	0	0	2023-12-17 11:32:13.974336	1	\N	\N
+18	wtfv3		0	\N	0	0	2023-12-17 11:45:21.343741	1	\N	\N
+19	wtfv3		0	\N	\N	0	2023-12-17 11:55:55.310872	1	\N	\N
+20	wtfv3		0	\N	5	0	2023-12-17 11:56:19.265798	1	\N	\N
+21	wtfv3		\N	\N	5	\N	2023-12-17 12:14:06.211849	1	\N	\N
+22	wtfv4	\N	\N	\N	\N	\N	2023-12-17 12:15:05.046041	1	\N	\N
 \.
 
 
@@ -309,7 +323,7 @@ SELECT pg_catalog.setval('public.recipe_tags_id_seq', 1, false);
 -- Name: recipes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.recipes_id_seq', 8, true);
+SELECT pg_catalog.setval('public.recipes_id_seq', 22, true);
 
 
 --
