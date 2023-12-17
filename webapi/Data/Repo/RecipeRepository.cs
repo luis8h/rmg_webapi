@@ -68,7 +68,6 @@ namespace webapi.Data.Repo
             command.Parameters.AddWithValue("difficulty", CheckNull(recipe.Difficulty));
             command.Parameters.AddWithValue("created_by", 1);
 
-
             await command.ExecuteScalarAsync();
 
             await _dbConnection.CloseAsync();
