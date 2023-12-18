@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 16.0 (Debian 16.0-1.pgdg120+1)
--- Dumped by pg_dump version 16.0 (Debian 16.0-1.pgdg120+1)
+-- Dumped from database version 16.1 (Debian 16.1-1.pgdg120+1)
+-- Dumped by pg_dump version 16.1 (Debian 16.1-1.pgdg120+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -291,6 +291,8 @@ COPY public.recipes (id, name, description, preptime, cooktime, worktime, diffic
 26	testv10	12341234dfdfdf	34	1	44	\N	2023-12-17 22:06:28.99798	1	\N	\N
 27	gdgssdf		345	\N	\N	\N	2023-12-17 22:07:57.222643	1	\N	\N
 28	test		34	\N	\N	\N	2023-12-17 22:10:55.509451	1	\N	\N
+29	Neues Formular	auch desc	4	30	\N	\N	2023-12-18 19:16:05.167144	1	\N	\N
+30			\N	\N	\N	\N	2023-12-18 19:25:23.75436	1	\N	\N
 \.
 
 
@@ -329,7 +331,7 @@ SELECT pg_catalog.setval('public.recipe_tags_id_seq', 1, false);
 -- Name: recipes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.recipes_id_seq', 28, true);
+SELECT pg_catalog.setval('public.recipes_id_seq', 30, true);
 
 
 --
