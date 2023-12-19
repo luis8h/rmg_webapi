@@ -10,6 +10,7 @@ namespace webapi.Data
 
         public IUserRepository UserRepository => new UserRepository(_dbConnection);
         public IRecipeRepository RecipeRepository => new RecipeRepository(_dbConnection);
+        public ITagRepository TagRepository => new TagRepository(_dbConnection);
 
         public UnitOfWork(NpgsqlConnection dbConnection)
         {

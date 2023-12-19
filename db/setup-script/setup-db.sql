@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 16.1 (Debian 16.1-1.pgdg120+1)
--- Dumped by pg_dump version 16.1 (Debian 16.1-1.pgdg120+1)
+-- Dumped from database version 16.0 (Debian 16.0-1.pgdg120+1)
+-- Dumped by pg_dump version 16.0 (Debian 16.0-1.pgdg120+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -301,6 +301,9 @@ COPY public.recipes (id, name, description, preptime, cooktime, worktime, diffic
 --
 
 COPY public.tags (id, name) FROM stdin;
+1	Vegan
+2	Vegetarisch
+3	Süß
 \.
 
 
@@ -338,7 +341,7 @@ SELECT pg_catalog.setval('public.recipes_id_seq', 30, true);
 -- Name: tags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tags_id_seq', 1, false);
+SELECT pg_catalog.setval('public.tags_id_seq', 3, true);
 
 
 --

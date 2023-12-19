@@ -4,19 +4,19 @@ using webapi.Models;
 
 namespace webapi.Data.Repo
 {
-    public class UserRepository : IUserRepository
+    public class TagRepository : ITagRepository
     {
         private readonly NpgsqlConnection _dbConnection;
 
-        public UserRepository(NpgsqlConnection dbConnection)
+        public TagRepository(NpgsqlConnection dbConnection)
         {
             _dbConnection = dbConnection;
         }
 
-        public async Task<List<User>> GetUsers()
+        public async Task<List<Tag>> GetTags()
         {
-            List<User> list = new List<User>();
-            string query = "SELECT id, firstname, lastname, username, email FROM users";
+            List<Tag> list = new List<Tag>();
+            string query = "SELECT id, name FROM tags";
 
             await _dbConnection.OpenAsync();
             await using var command = new NpgsqlCommand(query, _dbConnection);
@@ -24,13 +24,10 @@ namespace webapi.Data.Repo
 
             while (await reader.ReadAsync())
             {
-                list.Add(new User
+                list.Add(new Tag ()
                         {
                         Id = Convert.ToInt32(reader["id"]),
-                        Firstname = reader["firstname"].ToString(),
-                        Lastname = reader["lastname"].ToString(),
-                        Username = reader["username"].ToString(),
-                        Email = reader["email"].ToString()
+                        Name = reader["name"].ToString(),
                         });
             }
 
@@ -38,7 +35,5 @@ namespace webapi.Data.Repo
 
             return list;
         }
-
     }
 }
-

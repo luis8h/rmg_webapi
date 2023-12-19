@@ -4,5 +4,6 @@ namespace webapi.Interfaces
     {
         IUserRepository UserRepository { get; }
         IRecipeRepository RecipeRepository { get; }
+        ITagRepository TagRepository { get; }
     }
 }
