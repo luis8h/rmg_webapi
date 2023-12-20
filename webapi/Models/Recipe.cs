@@ -13,10 +13,12 @@ namespace webapi.Models
         public int CreatedBy { get; set; }
         public DateTime EditedAt { get; set; }
         public int EditedBy { get; set; }
+        public List<Tag> Tags { get; set; }
 
         public Recipe(string Name)
         {
             this.Name = Name;
+            this.Tags = new List<Tag>();
         }
     }
 }

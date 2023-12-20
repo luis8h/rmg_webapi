@@ -48,17 +48,16 @@ namespace webapi.Data.Repo
 
         public async Task<int> AddRecipe(Recipe recipe)
         {
-            string query = @"
+            string queryInsertRecipe = @"
                 INSERT INTO recipes
                     (name, description, preptime, cooktime, worktime, difficulty, created_by)
                     VALUES (@name, @description, @preptime, @cooktime, @worktime, @difficulty, @created_by)
             ";
 
+
             await _dbConnection.OpenAsync();
 
-            await using var command = new NpgsqlCommand(query, _dbConnection);
-
-            Console.WriteLine(recipe.Cooktime);
+            await using var command = new NpgsqlCommand(queryInsertRecipe, _dbConnection);
 
             command.Parameters.AddWithValue("name", recipe.Name);
             command.Parameters.AddWithValue("description", CheckNull(recipe.Description));
@@ -69,6 +68,22 @@ namespace webapi.Data.Repo
             command.Parameters.AddWithValue("created_by", 1);
 
             await command.ExecuteScalarAsync();
+
+            string queryInsertRecipeTags = @"
+                INSERT INTO recipe_tags
+                    (tag, recipe)
+                    VALUES (@tag, @recipe)
+            ";
+
+            foreach (Tag tag in recipe.Tags)
+            {
+                await using var command2 = new NpgsqlCommand(queryInsertRecipeTags, _dbConnection);
+
+                command2.Parameters.AddWithValue("tag", tag.Id!);
+                command2.Parameters.AddWithValue("recipe", 2);
+
+                await command2.ExecuteScalarAsync();
+            }
 
             await _dbConnection.CloseAsync();
 
