@@ -255,7 +255,8 @@ COPY public.ratings (id, recipe, user_id, rating) FROM stdin;
 --
 
 COPY public.recipe_tags (id, tag, recipe) FROM stdin;
-2	2	2
+14	2	46
+15	1	46
 \.
 
 
@@ -301,6 +302,11 @@ COPY public.recipes (id, name, description, preptime, cooktime, worktime, diffic
 35	teststasdfas		\N	\N	\N	\N	2023-12-20 22:50:27.480798	1	\N	\N
 36	testsfa		\N	\N	\N	\N	2023-12-20 22:51:08.386405	1	\N	\N
 37	asdfasdf		\N	\N	\N	\N	2023-12-20 22:52:13.084574	1	\N	\N
+38	tes		\N	\N	\N	\N	2023-12-21 08:10:55.782528	1	\N	\N
+39			\N	\N	\N	\N	2023-12-21 08:31:57.938882	1	\N	\N
+41	tes		\N	\N	\N	\N	2023-12-21 08:33:24.218347	1	\N	\N
+42	tes		\N	\N	\N	\N	2023-12-21 08:35:11.613916	1	\N	\N
+46	taaaaa		\N	\N	\N	\N	2023-12-21 08:41:43.965596	1	\N	\N
 \.
 
 
@@ -335,14 +341,14 @@ SELECT pg_catalog.setval('public.ratings_id_seq', 1, false);
 -- Name: recipe_tags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.recipe_tags_id_seq', 2, true);
+SELECT pg_catalog.setval('public.recipe_tags_id_seq', 15, true);
 
 
 --
 -- Name: recipes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.recipes_id_seq', 37, true);
+SELECT pg_catalog.setval('public.recipes_id_seq', 46, true);
 
 
 --
@@ -424,27 +430,27 @@ ALTER TABLE ONLY public.ratings
 
 
 --
--- Name: recipe_tags fk_recipe; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.recipe_tags
-    ADD CONSTRAINT fk_recipe FOREIGN KEY (tag) REFERENCES public.recipes(id);
-
-
---
--- Name: recipe_tags fk_tag; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.recipe_tags
-    ADD CONSTRAINT fk_tag FOREIGN KEY (recipe) REFERENCES public.tags(id);
-
-
---
 -- Name: ratings fk_users; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.ratings
     ADD CONSTRAINT fk_users FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: recipe_tags recipe_tags_recipe_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.recipe_tags
+    ADD CONSTRAINT recipe_tags_recipe_fkey FOREIGN KEY (recipe) REFERENCES public.recipes(id);
+
+
+--
+-- Name: recipe_tags recipe_tags_tag_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.recipe_tags
+    ADD CONSTRAINT recipe_tags_tag_fkey FOREIGN KEY (tag) REFERENCES public.tags(id);
 
 
 --

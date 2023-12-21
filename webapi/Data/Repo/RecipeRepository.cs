@@ -48,46 +48,65 @@ namespace webapi.Data.Repo
 
         public async Task<int> AddRecipe(Recipe recipe)
         {
-            string queryInsertRecipe = @"
-                INSERT INTO recipes
-                    (name, description, preptime, cooktime, worktime, difficulty, created_by)
-                    VALUES (@name, @description, @preptime, @cooktime, @worktime, @difficulty, @created_by)
-            ";
-
-
             await _dbConnection.OpenAsync();
 
-            await using var command = new NpgsqlCommand(queryInsertRecipe, _dbConnection);
+            await using var transaction = await _dbConnection.BeginTransactionAsync();
 
-            command.Parameters.AddWithValue("name", recipe.Name);
-            command.Parameters.AddWithValue("description", CheckNull(recipe.Description));
-            command.Parameters.AddWithValue("preptime", CheckNull(recipe.Preptime));
-            command.Parameters.AddWithValue("cooktime",  CheckNull(recipe.Cooktime));
-            command.Parameters.AddWithValue("worktime", CheckNull(recipe.Worktime));
-            command.Parameters.AddWithValue("difficulty", CheckNull(recipe.Difficulty));
-            command.Parameters.AddWithValue("created_by", 1);
+            try
+            {
+                // inserting into recipes
+                string query = @"
+                    INSERT INTO recipes
+                    (name, description, preptime, cooktime, worktime, difficulty, created_by)
+                    VALUES (@name, @description, @preptime, @cooktime, @worktime, @difficulty, @created_by)
+                    returning id
+                ";
 
-            await command.ExecuteScalarAsync();
+                await using var command = new NpgsqlCommand(query, _dbConnection);
+                command.Transaction = transaction;
 
-            string queryInsertRecipeTags = @"
-                INSERT INTO recipe_tags
+                command.Parameters.AddWithValue("name", recipe.Name);
+                command.Parameters.AddWithValue("description", CheckNull(recipe.Description));
+                command.Parameters.AddWithValue("preptime", CheckNull(recipe.Preptime));
+                command.Parameters.AddWithValue("cooktime", CheckNull(recipe.Cooktime));
+                command.Parameters.AddWithValue("worktime", CheckNull(recipe.Worktime));
+                command.Parameters.AddWithValue("difficulty", CheckNull(recipe.Difficulty));
+                command.Parameters.AddWithValue("created_by", 1);
+
+                int recipeId = (int) await command.ExecuteScalarAsync();
+
+
+                // inserting into recipe_tags
+                query = @"
+                    INSERT INTO recipe_tags
                     (tag, recipe)
                     VALUES (@tag, @recipe)
-            ";
+                    ";
 
-            foreach (Tag tag in recipe.Tags)
+                command.CommandText = query;
+                command.Parameters.Clear();
+
+                NpgsqlParameter tagParam = command.Parameters.AddWithValue("tag", 0);
+                NpgsqlParameter recipeParam = command.Parameters.AddWithValue("recipe", recipeId);
+
+                foreach (Tag tag in recipe.Tags)
+                {
+                    tagParam.Value = tag.Id!;
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                await transaction.CommitAsync();
+                await _dbConnection.CloseAsync();
+                return 0;
+            }
+            catch (Exception ex)
             {
-                await using var command2 = new NpgsqlCommand(queryInsertRecipeTags, _dbConnection);
-
-                command2.Parameters.AddWithValue("tag", tag.Id!);
-                command2.Parameters.AddWithValue("recipe", 2);
-
-                await command2.ExecuteScalarAsync();
+                await transaction.RollbackAsync();
+                await _dbConnection.CloseAsync();
+                Console.WriteLine(ex);
+                return 1;
             }
 
-            await _dbConnection.CloseAsync();
-
-            return 1;
         }
     }
 }
