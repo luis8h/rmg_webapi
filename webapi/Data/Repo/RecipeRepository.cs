@@ -95,6 +95,27 @@ namespace webapi.Data.Repo
                     await command.ExecuteNonQueryAsync();
                 }
 
+                // inserting into ratings
+                query = @"
+                    INSERT INTO ratings
+                    (recipe, user_id, rating)
+                    VALUES (@recipe, @user_id, @rating)
+                    ";
+
+                command.CommandText = query;
+                command.Parameters.Clear();
+
+                NpgsqlParameter ratingRecipeParam = command.Parameters.AddWithValue("recipe", recipeId);
+                NpgsqlParameter ratingUserParam = command.Parameters.AddWithValue("user_id", 0);
+                NpgsqlParameter ratingValueParam = command.Parameters.AddWithValue("rating", 0);
+
+                foreach (Rating rating in recipe.Ratings)
+                {
+                    ratingValueParam.Value = rating.Value;
+                    ratingUserParam.Value = rating.User;
+                    await command.ExecuteNonQueryAsync();
+                }
+
                 await transaction.CommitAsync();
                 await _dbConnection.CloseAsync();
                 return 0;

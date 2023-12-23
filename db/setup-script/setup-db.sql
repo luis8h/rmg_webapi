@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 16.0 (Debian 16.0-1.pgdg120+1)
--- Dumped by pg_dump version 16.0 (Debian 16.0-1.pgdg120+1)
+-- Dumped from database version 16.1 (Debian 16.1-1.pgdg120+1)
+-- Dumped by pg_dump version 16.1 (Debian 16.1-1.pgdg120+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -247,6 +247,9 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 --
 
 COPY public.ratings (id, recipe, user_id, rating) FROM stdin;
+1	52	1	3
+4	55	2	3
+5	55	2	3
 \.
 
 
@@ -257,6 +260,8 @@ COPY public.ratings (id, recipe, user_id, rating) FROM stdin;
 COPY public.recipe_tags (id, tag, recipe) FROM stdin;
 14	2	46
 15	1	46
+19	3	55
+20	2	55
 \.
 
 
@@ -307,6 +312,8 @@ COPY public.recipes (id, name, description, preptime, cooktime, worktime, diffic
 41	tes		\N	\N	\N	\N	2023-12-21 08:33:24.218347	1	\N	\N
 42	tes		\N	\N	\N	\N	2023-12-21 08:35:11.613916	1	\N	\N
 46	taaaaa		\N	\N	\N	\N	2023-12-21 08:41:43.965596	1	\N	\N
+52	tesdffff		\N	\N	\N	\N	2023-12-23 17:59:57.279049	1	\N	\N
+55	asdsasd	asdfa	\N	\N	\N	\N	2023-12-23 18:09:02.583015	1	\N	\N
 \.
 
 
@@ -327,6 +334,7 @@ COPY public.tags (id, name) FROM stdin;
 
 COPY public.users (id, username, firstname, lastname, password, email, signup_date) FROM stdin;
 1	luis8h	Luis	Schmidmeister	test	vzbls@t-online.de	2023-12-10 14:56:40.293945
+2	timo9h	Timo	Schmidmeister	test2	vzbts@t-online.de	2023-12-23 18:02:54.478591
 \.
 
 
@@ -334,21 +342,21 @@ COPY public.users (id, username, firstname, lastname, password, email, signup_da
 -- Name: ratings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.ratings_id_seq', 1, false);
+SELECT pg_catalog.setval('public.ratings_id_seq', 5, true);
 
 
 --
 -- Name: recipe_tags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.recipe_tags_id_seq', 15, true);
+SELECT pg_catalog.setval('public.recipe_tags_id_seq', 20, true);
 
 
 --
 -- Name: recipes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.recipes_id_seq', 46, true);
+SELECT pg_catalog.setval('public.recipes_id_seq', 55, true);
 
 
 --
@@ -362,7 +370,7 @@ SELECT pg_catalog.setval('public.tags_id_seq', 3, true);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 1, true);
+SELECT pg_catalog.setval('public.users_id_seq', 2, true);
 
 
 --
