@@ -32,8 +32,8 @@ namespace webapi.Data.Repo
                 list.Add(new Recipe ()
                         {
                         Id = Convert.ToInt32(reader["id"]),
-                        Description = reader["description"].ToString() ?? "",
-                        Name = reader["Name"].ToString(),
+                        Description = reader["name"].ToString() ?? ""
+                        Name = reader["description"].ToString(),
                         // AvgRating = Convert.ToSingle(reader["avg_rating"]),
                         // AvgRating = reader["avg_rating"] != DBNull.Value ? Convert.ToSingle(reader["avg_rating"]) : -1.0f,
                         });
@@ -73,7 +73,7 @@ namespace webapi.Data.Repo
                 await using var command = new NpgsqlCommand(query, _dbConnection);
                 command.Transaction = transaction;
 
-                command.Parameters.AddWithValue("name", CheckNull(recipe.Name));
+                command.Parameters.AddWithValue("name", recipe.Name);
                 command.Parameters.AddWithValue("description", CheckNull(recipe.Description));
                 command.Parameters.AddWithValue("preptime", CheckNull(recipe.Preptime));
                 command.Parameters.AddWithValue("cooktime", CheckNull(recipe.Cooktime));

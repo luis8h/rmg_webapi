@@ -250,6 +250,14 @@ COPY public.ratings (id, recipe, user_id, rating) FROM stdin;
 1	52	1	3
 4	55	2	3
 5	55	2	3
+6	56	2	4
+7	56	2	4
+8	57	1	3
+9	57	1	3
+10	58	1	3
+11	58	1	3
+12	59	1	3
+13	59	2	5
 \.
 
 
@@ -262,6 +270,10 @@ COPY public.recipe_tags (id, tag, recipe) FROM stdin;
 15	1	46
 19	3	55
 20	2	55
+21	1	57
+22	3	57
+23	1	59
+24	3	59
 \.
 
 
@@ -314,6 +326,10 @@ COPY public.recipes (id, name, description, preptime, cooktime, worktime, diffic
 46	taaaaa		\N	\N	\N	\N	2023-12-21 08:41:43.965596	1	\N	\N
 52	tesdffff		\N	\N	\N	\N	2023-12-23 17:59:57.279049	1	\N	\N
 55	asdsasd	asdfa	\N	\N	\N	\N	2023-12-23 18:09:02.583015	1	\N	\N
+56	TEst neu		\N	\N	\N	\N	2023-12-25 09:55:23.127305	1	\N	\N
+57	tes		\N	5	\N	\N	2023-12-25 13:22:38.524889	1	\N	\N
+58	5h		\N	\N	\N	\N	2023-12-25 13:25:23.350222	1	\N	\N
+59	test neu	testsej;aljsdf	\N	3	\N	\N	2023-12-25 13:32:51.297657	1	\N	\N
 \.
 
 
@@ -342,21 +358,21 @@ COPY public.users (id, username, firstname, lastname, password, email, signup_da
 -- Name: ratings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.ratings_id_seq', 5, true);
+SELECT pg_catalog.setval('public.ratings_id_seq', 13, true);
 
 
 --
 -- Name: recipe_tags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.recipe_tags_id_seq', 20, true);
+SELECT pg_catalog.setval('public.recipe_tags_id_seq', 24, true);
 
 
 --
 -- Name: recipes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.recipes_id_seq', 55, true);
+SELECT pg_catalog.setval('public.recipes_id_seq', 59, true);
 
 
 --

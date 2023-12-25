@@ -1,5 +1,5 @@
 
-namespace webapi.Models
+namespace webapi.Models.Basic
 {
     public class Tag
     {

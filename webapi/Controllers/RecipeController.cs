@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using webapi.Interfaces;
-using webapi.Models;
+using webapi.Models.Basic;
 
 namespace webapi.Controllers
 {
