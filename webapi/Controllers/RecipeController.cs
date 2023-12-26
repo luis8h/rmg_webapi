@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using webapi.Interfaces;
 using webapi.Models.Basic;
+using webapi.Models.Extended;
 
 namespace webapi.Controllers
 {
@@ -14,7 +15,7 @@ namespace webapi.Controllers
         }
 
         [HttpGet("list")]
-        public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipes()
+        public async Task<ActionResult<IEnumerable<DetailRecipe>>> GetRecipes()
         {
             var recipe = await _uow.RecipeRepository.GetRecipes();
             return Ok(recipe);

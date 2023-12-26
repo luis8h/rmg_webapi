@@ -1,10 +1,11 @@
 using webapi.Models.Basic;
+using webapi.Models.Extended;
 
 namespace webapi.Interfaces
 {
     public interface IRecipeRepository
     {
-        Task<List<Recipe>> GetRecipes();
+        Task<List<DetailRecipe>> GetRecipes();
         Task<int> AddRecipe(Recipe recipe);
     }
 }

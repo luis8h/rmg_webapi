@@ -36,3 +36,4 @@
 /home/luis8h/data-cloud/projects/recipe-manager-web-api/webapi/obj/Debug/net7.0/ref/webapi.dll
 /home/luis8h/data-cloud/projects/recipe-manager-web-api/webapi/bin/Debug/net7.0/Mapster.dll
 /home/luis8h/data-cloud/projects/recipe-manager-web-api/webapi/bin/Debug/net7.0/Mapster.Core.dll
+/home/luis8h/data-cloud/projects/recipe-manager-web-api/webapi/bin/Debug/net7.0/Newtonsoft.Json.dll
