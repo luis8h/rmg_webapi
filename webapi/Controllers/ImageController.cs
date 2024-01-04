@@ -6,34 +6,17 @@ using webapi.Models.Extended;
 
 namespace webapi.Controllers
 {
-    public class RecipeController : BaseController
+    public class ImageController : BaseController
     {
         private readonly IUnitOfWork _uow;
 
-        public RecipeController(IUnitOfWork uow)
+        public ImageController(IUnitOfWork uow)
         {
             this._uow = uow;
         }
 
-        [HttpGet("list")]
-        public async Task<ActionResult<IEnumerable<DetailRecipe>>> GetRecipes()
-        {
-            var recipe = await _uow.RecipeRepository.GetRecipes();
-            return Ok(recipe);
-        }
-
-        [HttpPost("add")]
-        public async Task<IActionResult> AddRecipe(Recipe recipe)
-        {
-            await _uow.RecipeRepository.AddRecipe(recipe);
-
-            // await uow.SaveAsync();
-            return StatusCode(201);
-        }
-
-        [Route("{recipeId}/upload-image")]
         [HttpPost, DisableRequestSizeLimit]
-        public async Task<IActionResult> UploadAsync(int recipeId)
+        public async Task<IActionResult> UploadAsync()
         {
             try
             {
@@ -43,8 +26,8 @@ namespace webapi.Controllers
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
                 if (file.Length > 0)
                 {
-                    var fileName = "main_" + recipeId;
-                    var fullPath = Path.Combine(pathToSave, "main_" + recipeId);
+                    var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName!.Trim('"');
+                    var fullPath = Path.Combine(pathToSave, fileName);
                     var dbPath = Path.Combine(folderName, fileName);
                     using (var stream = new FileStream(fullPath, FileMode.Create))
                     {
@@ -64,3 +47,4 @@ namespace webapi.Controllers
         }
     }
 }
+

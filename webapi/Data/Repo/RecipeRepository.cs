@@ -61,8 +61,9 @@ namespace webapi.Data.Repo
             return list;
         }
 
-        private List<Rating> GetRatingsOfJson(string[] ratingsArray) {
-            List<Rating> ratingsList= new List<Rating>();
+        private List<Rating> GetRatingsOfJson(string[] ratingsArray)
+        {
+            List<Rating> ratingsList = new List<Rating>();
 
             if (ratingsArray != null)
             {
@@ -71,21 +72,22 @@ namespace webapi.Data.Repo
                     if (ratingJson == null || ratingJson.Trim() == "") continue;
                     var ratingObject = JsonSerializer.Deserialize<JsonElement>(ratingJson);
 
-                    ratingsList.Add( new Rating
-                            {
-                            Id = ratingObject.TryGetProperty("id", out var id) ? id.GetInt32() : 0,
-                            Recipe = ratingObject.TryGetProperty("recipe", out var recipe) ? recipe.GetInt32() : 0,
-                            User = ratingObject.TryGetProperty("user_id", out var userId) ? userId.GetInt32() : 0,
-                            Value = ratingObject.TryGetProperty("value", out var value) ? value.GetInt32() : 0,
-                            });
+                    ratingsList.Add(new Rating
+                    {
+                        Id = ratingObject.TryGetProperty("id", out var id) ? id.GetInt32() : 0,
+                        Recipe = ratingObject.TryGetProperty("recipe", out var recipe) ? recipe.GetInt32() : 0,
+                        User = ratingObject.TryGetProperty("user_id", out var userId) ? userId.GetInt32() : 0,
+                        Value = ratingObject.TryGetProperty("rating", out var value) ? value.GetInt32() : 0,
+                    });
                 }
             }
 
             return ratingsList;
         }
 
-        private List<Tag> GetTagsOfJson(string[] tagsArray) {
-            List<Tag> tagsList= new List<Tag>();
+        private List<Tag> GetTagsOfJson(string[] tagsArray)
+        {
+            List<Tag> tagsList = new List<Tag>();
 
             if (tagsArray != null)
             {
@@ -94,11 +96,11 @@ namespace webapi.Data.Repo
                     if (tagJson == null || tagJson.Trim() == "") continue;
                     var tagObject = JsonSerializer.Deserialize<JsonElement>(tagJson);
 
-                    tagsList.Add( new Tag
-                            {
-                            Id = tagObject.TryGetProperty("id", out var id) ? id.GetInt32() : 0,
-                            Name = tagObject.TryGetProperty("recipe", out var recipe) ? recipe.ToString() : "",
-                            });
+                    tagsList.Add(new Tag
+                    {
+                        Id = tagObject.TryGetProperty("id", out var id) ? id.GetInt32() : 0,
+                        Name = tagObject.TryGetProperty("recipe", out var recipe) ? recipe.ToString() : "",
+                    });
                 }
             }
 
@@ -142,8 +144,8 @@ namespace webapi.Data.Repo
                 command.Parameters.AddWithValue("difficulty", CheckNull(recipe.Difficulty));
                 command.Parameters.AddWithValue("created_by", 1);
 
-                int recipeId = (int)await command.ExecuteScalarAsync();
-
+                int recipeId = (await command.ExecuteScalarAsync() as int?) ?? -1;
+                if (recipeId == -1) return 1;
 
                 // inserting into recipe_tags
                 query = @"

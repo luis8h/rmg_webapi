@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.Features;
 using Npgsql;
 using webapi.Data;
 using webapi.Interfaces;
@@ -16,6 +17,13 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // user cors for access control (allow all access)
 builder.Services.AddCors();
+
+builder.Services.Configure<FormOptions>(o =>
+{
+    o.ValueLengthLimit = int.MaxValue;
+    o.MultipartBodyLengthLimit = int.MaxValue;
+    o.MemoryBufferThreshold = int.MaxValue;
+});
 
 // configure db connection
 var connectionString = builder.Configuration.GetConnectionString("default");

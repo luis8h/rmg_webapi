@@ -247,17 +247,8 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 --
 
 COPY public.ratings (id, recipe, user_id, rating) FROM stdin;
-1	52	1	3
-4	55	2	3
-5	55	2	3
-6	56	2	4
-7	56	2	4
-8	57	1	3
-9	57	1	3
-10	58	1	3
-11	58	1	3
-12	59	1	3
-13	59	2	5
+14	60	1	4
+15	60	2	3
 \.
 
 
@@ -266,14 +257,8 @@ COPY public.ratings (id, recipe, user_id, rating) FROM stdin;
 --
 
 COPY public.recipe_tags (id, tag, recipe) FROM stdin;
-14	2	46
-15	1	46
-19	3	55
-20	2	55
-21	1	57
-22	3	57
-23	1	59
-24	3	59
+25	1	60
+26	2	60
 \.
 
 
@@ -282,54 +267,7 @@ COPY public.recipe_tags (id, tag, recipe) FROM stdin;
 --
 
 COPY public.recipes (id, name, description, preptime, cooktime, worktime, difficulty, created_at, created_by, edited_at, edited_by) FROM stdin;
-1	Test Rezept	Das ist ein simples Test Rezept	30	12	42	3	2023-12-12 19:17:10.790286	1	2023-12-12 19:17:10.790286	1
-2	Test 2	Ein zweites Testrezept	8	40	10	2	2023-12-12 19:20:44.417077	1	\N	\N
-3	3. Test	Nochmal ein Test einfach	\N	\N	\N	8	2023-12-12 19:23:48.99739	1	\N	\N
-4	Luis	\N	\N	\N	\N	\N	2023-12-16 13:26:18.004172	1	\N	\N
-5	string	\N	\N	\N	\N	\N	2023-12-16 13:26:57.474611	1	\N	\N
-6	Luis	\N	\N	\N	\N	\N	2023-12-16 13:29:35.936688	1	\N	\N
-7	Luis	\N	\N	\N	\N	\N	2023-12-16 13:32:42.185949	1	\N	\N
-8	Timo	\N	\N	\N	\N	\N	2023-12-16 13:33:09.971746	1	\N	\N
-9	wtf	\N	\N	\N	\N	\N	2023-12-17 09:33:00.598094	1	\N	\N
-10	testst v3	\N	\N	\N	\N	\N	2023-12-17 09:39:53.783866	1	\N	\N
-11	testv4	\N	\N	\N	\N	\N	2023-12-17 09:43:12.477511	1	\N	\N
-12		\N	\N	\N	\N	\N	2023-12-17 10:53:32.146252	1	\N	\N
-13	wtfv2	\N	\N	\N	\N	\N	2023-12-17 11:13:29.697942	1	\N	\N
-14	wtfv2	\N	\N	\N	\N	\N	2023-12-17 11:14:39.272082	1	\N	\N
-15	wtfv3	\N	\N	\N	\N	\N	2023-12-17 11:15:43.414608	1	\N	\N
-16	wtfv3	\N	\N	\N	\N	\N	2023-12-17 11:27:54.915459	1	\N	\N
-17	wtfv3		0	5	0	0	2023-12-17 11:32:13.974336	1	\N	\N
-18	wtfv3		0	\N	0	0	2023-12-17 11:45:21.343741	1	\N	\N
-19	wtfv3		0	\N	\N	0	2023-12-17 11:55:55.310872	1	\N	\N
-20	wtfv3		0	\N	5	0	2023-12-17 11:56:19.265798	1	\N	\N
-21	wtfv3		\N	\N	5	\N	2023-12-17 12:14:06.211849	1	\N	\N
-22	wtfv4	\N	\N	\N	\N	\N	2023-12-17 12:15:05.046041	1	\N	\N
-23	testv7	\N	\N	\N	\N	\N	2023-12-17 21:36:51.913208	1	\N	\N
-24	testnull		3	\N	\N	\N	2023-12-17 22:04:23.161424	1	\N	\N
-25	testnull2		\N	\N	\N	\N	2023-12-17 22:04:45.581576	1	\N	\N
-26	testv10	12341234dfdfdf	34	1	44	\N	2023-12-17 22:06:28.99798	1	\N	\N
-27	gdgssdf		345	\N	\N	\N	2023-12-17 22:07:57.222643	1	\N	\N
-28	test		34	\N	\N	\N	2023-12-17 22:10:55.509451	1	\N	\N
-29	Neues Formular	auch desc	4	30	\N	\N	2023-12-18 19:16:05.167144	1	\N	\N
-30			\N	\N	\N	\N	2023-12-18 19:25:23.75436	1	\N	\N
-31	test tags v1		\N	\N	\N	\N	2023-12-20 22:33:20.765758	1	\N	\N
-32	tet v2		\N	\N	\N	\N	2023-12-20 22:34:40.19142	1	\N	\N
-33	teststasdfas		\N	\N	\N	\N	2023-12-20 22:45:48.164475	1	\N	\N
-34	teststasdfas		\N	\N	\N	\N	2023-12-20 22:45:49.808192	1	\N	\N
-35	teststasdfas		\N	\N	\N	\N	2023-12-20 22:50:27.480798	1	\N	\N
-36	testsfa		\N	\N	\N	\N	2023-12-20 22:51:08.386405	1	\N	\N
-37	asdfasdf		\N	\N	\N	\N	2023-12-20 22:52:13.084574	1	\N	\N
-38	tes		\N	\N	\N	\N	2023-12-21 08:10:55.782528	1	\N	\N
-39			\N	\N	\N	\N	2023-12-21 08:31:57.938882	1	\N	\N
-41	tes		\N	\N	\N	\N	2023-12-21 08:33:24.218347	1	\N	\N
-42	tes		\N	\N	\N	\N	2023-12-21 08:35:11.613916	1	\N	\N
-46	taaaaa		\N	\N	\N	\N	2023-12-21 08:41:43.965596	1	\N	\N
-52	tesdffff		\N	\N	\N	\N	2023-12-23 17:59:57.279049	1	\N	\N
-55	asdsasd	asdfa	\N	\N	\N	\N	2023-12-23 18:09:02.583015	1	\N	\N
-56	TEst neu		\N	\N	\N	\N	2023-12-25 09:55:23.127305	1	\N	\N
-57	tes		\N	5	\N	\N	2023-12-25 13:22:38.524889	1	\N	\N
-58	5h		\N	\N	\N	\N	2023-12-25 13:25:23.350222	1	\N	\N
-59	test neu	testsej;aljsdf	\N	3	\N	\N	2023-12-25 13:32:51.297657	1	\N	\N
+60	Spaghetti	Einfache Spaghetti ohne alles. Können evtl. mit Butter serviert werden.	0	10	3	\N	2024-01-04 12:06:51.581234	1	\N	\N
 \.
 
 
@@ -358,21 +296,21 @@ COPY public.users (id, username, firstname, lastname, password, email, signup_da
 -- Name: ratings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.ratings_id_seq', 13, true);
+SELECT pg_catalog.setval('public.ratings_id_seq', 15, true);
 
 
 --
 -- Name: recipe_tags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.recipe_tags_id_seq', 24, true);
+SELECT pg_catalog.setval('public.recipe_tags_id_seq', 26, true);
 
 
 --
 -- Name: recipes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.recipes_id_seq', 59, true);
+SELECT pg_catalog.setval('public.recipes_id_seq', 60, true);
 
 
 --
