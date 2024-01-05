@@ -145,7 +145,7 @@ namespace webapi.Data.Repo
                 command.Parameters.AddWithValue("created_by", 1);
 
                 int recipeId = (await command.ExecuteScalarAsync() as int?) ?? -1;
-                if (recipeId == -1) return 1;
+                if (recipeId == -1) return -1;
 
                 // inserting into recipe_tags
                 query = @"
@@ -189,7 +189,7 @@ namespace webapi.Data.Repo
 
                 await transaction.CommitAsync();
                 await _dbConnection.CloseAsync();
-                return 0;
+                return recipeId;
             }
             catch (Exception ex)
             {

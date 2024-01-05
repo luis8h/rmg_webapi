@@ -268,6 +268,10 @@ COPY public.recipe_tags (id, tag, recipe) FROM stdin;
 
 COPY public.recipes (id, name, description, preptime, cooktime, worktime, difficulty, created_at, created_by, edited_at, edited_by) FROM stdin;
 60	Spaghetti	Einfache Spaghetti ohne alles. Können evtl. mit Butter serviert werden.	0	10	3	\N	2024-01-04 12:06:51.581234	1	\N	\N
+61	test		\N	\N	\N	\N	2024-01-05 13:10:16.483838	1	\N	\N
+62	img test		\N	\N	\N	\N	2024-01-05 13:11:15.431907	1	\N	\N
+63	asdfasdf		\N	\N	\N	\N	2024-01-05 13:22:31.832862	1	\N	\N
+64	asdfasdf		\N	\N	\N	\N	2024-01-05 13:25:30.899948	1	\N	\N
 \.
 
 
@@ -310,7 +314,7 @@ SELECT pg_catalog.setval('public.recipe_tags_id_seq', 26, true);
 -- Name: recipes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.recipes_id_seq', 60, true);
+SELECT pg_catalog.setval('public.recipes_id_seq', 64, true);
 
 
 --
