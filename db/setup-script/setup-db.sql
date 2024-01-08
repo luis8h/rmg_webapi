@@ -247,8 +247,8 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 --
 
 COPY public.ratings (id, recipe, user_id, rating) FROM stdin;
-14	60	1	4
-15	60	2	3
+26	60	1	4
+27	60	2	3
 \.
 
 
@@ -257,8 +257,8 @@ COPY public.ratings (id, recipe, user_id, rating) FROM stdin;
 --
 
 COPY public.recipe_tags (id, tag, recipe) FROM stdin;
-25	1	60
-26	2	60
+37	1	60
+38	2	60
 \.
 
 
@@ -267,11 +267,11 @@ COPY public.recipe_tags (id, tag, recipe) FROM stdin;
 --
 
 COPY public.recipes (id, name, description, preptime, cooktime, worktime, difficulty, created_at, created_by, edited_at, edited_by) FROM stdin;
-60	Spaghetti	Einfache Spaghetti ohne alles. Können evtl. mit Butter serviert werden.	0	10	3	\N	2024-01-04 12:06:51.581234	1	\N	\N
 61	test		\N	\N	\N	\N	2024-01-05 13:10:16.483838	1	\N	\N
 62	img test		\N	\N	\N	\N	2024-01-05 13:11:15.431907	1	\N	\N
 63	asdfasdf		\N	\N	\N	\N	2024-01-05 13:22:31.832862	1	\N	\N
 64	asdfasdf		\N	\N	\N	\N	2024-01-05 13:25:30.899948	1	\N	\N
+60	Papa	te	\N	\N	\N	\N	2024-01-04 12:06:51.581234	1	\N	\N
 \.
 
 
@@ -300,14 +300,14 @@ COPY public.users (id, username, firstname, lastname, password, email, signup_da
 -- Name: ratings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.ratings_id_seq', 15, true);
+SELECT pg_catalog.setval('public.ratings_id_seq', 27, true);
 
 
 --
 -- Name: recipe_tags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.recipe_tags_id_seq', 26, true);
+SELECT pg_catalog.setval('public.recipe_tags_id_seq', 38, true);
 
 
 --

@@ -32,6 +32,45 @@ namespace webapi.Controllers
             return Ok(new { Id = recipeId });
         }
 
+        [HttpPut("{recipeId}/update")]
+        public async Task<IActionResult> UpdateRecipe(int recipeId, Recipe updatedRecipe)
+        {
+            var existingRecipe = await _uow.RecipeRepository.GetRecipeById(recipeId);
+
+            if (existingRecipe == null)
+            {
+                return NotFound(); // Recipe with the given ID not found
+            }
+
+            // Update the properties of the existing recipe
+            existingRecipe.Name = updatedRecipe.Name;
+            existingRecipe.Description = updatedRecipe.Description;
+            // Update other properties as needed
+
+            // Perform the update in the repository
+            int error = await _uow.RecipeRepository.PutRecipe(existingRecipe);
+
+            if (error == -1)
+            {
+                return BadRequest(); // Update failed
+            }
+
+            return NoContent(); // Successful update, no content to return
+        }
+
+        [HttpGet("{recipeId}/data")]
+        public async Task<IActionResult> GetRecipeById(int recipeId)
+        {
+            var recipe = await _uow.RecipeRepository.GetRecipeById(recipeId);
+
+            if (recipe == null)
+            {
+                return NotFound(); // Recipe with the given ID not found
+            }
+
+            return Ok(recipe);
+        }
+
         [Route("{recipeId}/upload-image")]
         [HttpPost, DisableRequestSizeLimit]
         public async Task<IActionResult> UploadAsync(int recipeId)

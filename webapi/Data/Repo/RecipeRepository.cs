@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Transactions;
 using Newtonsoft.Json;
 using Npgsql;
 using webapi.Interfaces;
@@ -12,9 +13,54 @@ namespace webapi.Data.Repo
     {
         private readonly NpgsqlConnection _dbConnection;
 
-        public RecipeRepository(NpgsqlConnection dbConnection)
+        private readonly ITagRepository _tagRepository;
+        private readonly IRatingRepository _ratingRepository;
+
+        public RecipeRepository(NpgsqlConnection dbConnection, ITagRepository tagRepository, IRatingRepository ratingRepository)
         {
             _dbConnection = dbConnection;
+            _tagRepository = tagRepository;
+            _ratingRepository = ratingRepository;
+        }
+
+        public async Task<Recipe> GetRecipeById(int recipeId)
+        {
+            string query = @"
+                SELECT
+                re.id as id,
+                re.name as name,
+                re.description as description
+                    FROM recipes re
+                    left join ratings ra on ra.recipe = re.id
+                    left join recipe_tags rta on rta.recipe = re.id
+                    left join tags ta on ta.id = rta.tag
+                where re.id = @recipe_id
+                group by re.id
+                    ";
+
+            await _dbConnection.OpenAsync();
+            await using var command = new NpgsqlCommand(query, _dbConnection);
+            command.Parameters.AddWithValue("recipe_id", recipeId);
+            await using var reader = await command.ExecuteReaderAsync();
+
+            Recipe recipe = new Recipe() { Id = -1 };
+
+            while (await reader.ReadAsync())
+            {
+                recipe = new Recipe()
+                {
+                    Id = Convert.ToInt32(reader["id"]),
+                    Description = reader["Description"].ToString(),
+                    Name = reader["Name"].ToString(),
+                };
+            }
+
+            await _dbConnection.CloseAsync();
+
+            recipe.Tags = await _tagRepository.GetTagsByRecipeId(recipeId);
+            recipe.Ratings = await _ratingRepository.GetRatingsByRecipeId(recipeId);
+
+            return recipe;
         }
 
         public async Task<List<DetailRecipe>> GetRecipes()
@@ -117,6 +163,153 @@ namespace webapi.Data.Repo
             return value ?? (object)DBNull.Value;
         }
 
+        public async Task<int> PutRecipe(Recipe recipe)
+        {
+            await _dbConnection.OpenAsync();
+
+            await using var transaction = await _dbConnection.BeginTransactionAsync();
+
+            try
+            {
+                await UpdateRecipe(recipe, transaction);
+
+                await DeleteRecipeTags(recipe.Id, transaction);
+                await InsertTagsToRecipe(recipe.Tags, recipe.Id, transaction);
+
+                await DeleteRecipeRatings(recipe.Id, transaction);
+                await InsertRatingsToRecipe(recipe.Ratings, recipe.Id, transaction);
+
+                await transaction.CommitAsync();
+                await _dbConnection.CloseAsync();
+                return recipe.Id ?? -1;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                await _dbConnection.CloseAsync();
+                Console.WriteLine(ex);
+                return 1;
+            }
+
+        }
+
+        public async Task<int> UpdateRecipe(Recipe recipe, NpgsqlTransaction transaction)
+        {
+                string query = @"
+                    UPDATE recipes
+                    SET name = @name,
+                        description = @description,
+                        preptime = @preptime,
+                        cooktime = @cooktime,
+                        worktime = @worktime,
+                        difficulty = @difficulty,
+                        created_by = @created_by
+                    WHERE id = @recipe_id
+                ";
+
+                await using var command = new NpgsqlCommand(query, _dbConnection);
+                command.Transaction = transaction;
+
+                command.Parameters.AddWithValue("recipe_id", CheckNull(recipe.Id));
+                command.Parameters.AddWithValue("name", CheckNull(recipe.Name));
+                command.Parameters.AddWithValue("description", CheckNull(recipe.Description));
+                command.Parameters.AddWithValue("preptime", CheckNull(recipe.Preptime));
+                command.Parameters.AddWithValue("cooktime", CheckNull(recipe.Cooktime));
+                command.Parameters.AddWithValue("worktime", CheckNull(recipe.Worktime));
+                command.Parameters.AddWithValue("difficulty", CheckNull(recipe.Difficulty));
+                command.Parameters.AddWithValue("created_by", 1);
+
+                await command.ExecuteScalarAsync();
+
+                return 0;
+        }
+
+        public async Task<int> InsertRatingsToRecipe(List<Rating> ratings, int? recipeId, NpgsqlTransaction transaction)
+        {
+            string query = @"
+                INSERT INTO ratings
+                (recipe, user_id, rating)
+                VALUES (@recipe, @user_id, @rating)
+                ";
+
+            await using var command = new NpgsqlCommand(query, _dbConnection);
+
+            command.CommandText = query;
+            command.Transaction = transaction;
+
+            NpgsqlParameter ratingRecipeParam = command.Parameters.AddWithValue("recipe", recipeId!);
+            NpgsqlParameter ratingUserParam = command.Parameters.AddWithValue("user_id", 0);
+            NpgsqlParameter ratingValueParam = command.Parameters.AddWithValue("rating", 0);
+
+            foreach (Rating rating in ratings)
+            {
+                ratingValueParam.Value = rating.Value;
+                ratingUserParam.Value = rating.User;
+                await command.ExecuteNonQueryAsync();
+            }
+
+            return 0;
+        }
+
+        public async Task<int> DeleteRecipeTags(int? recipeId, NpgsqlTransaction transaction)
+        {
+            string query = @"
+                delete from recipe_tags
+                where recipe = @recipe
+                ";
+
+            await using var command = new NpgsqlCommand(query, _dbConnection);
+            command.Transaction = transaction;
+
+            NpgsqlParameter recipeIdParam = command.Parameters.AddWithValue("recipe", recipeId!);
+
+            await command.ExecuteScalarAsync();
+
+            return 0;
+        }
+
+        public async Task<int> DeleteRecipeRatings(int? recipeId, NpgsqlTransaction transaction)
+        {
+            string query = @"
+                delete from ratings
+                where recipe = @recipe
+                ";
+
+            await using var command = new NpgsqlCommand(query, _dbConnection);
+            command.Transaction = transaction;
+
+            NpgsqlParameter recipeIdParam = command.Parameters.AddWithValue("recipe", recipeId!);
+
+            await command.ExecuteScalarAsync();
+
+            return 0;
+        }
+
+        public async Task<int> InsertTagsToRecipe(List<Tag> tags, int? recipeId, NpgsqlTransaction transaction)
+        {
+            string query = @"
+                INSERT INTO recipe_tags
+                (tag, recipe)
+                VALUES (@tag, @recipe)
+                ";
+
+            await using var command = new NpgsqlCommand(query, _dbConnection);
+            command.CommandText = query;
+            command.Transaction = transaction;
+
+            NpgsqlParameter tagParam = command.Parameters.AddWithValue("tag", 0);
+            NpgsqlParameter recipeParam = command.Parameters.AddWithValue("recipe", recipeId!);
+
+            foreach (Tag tag in tags)
+            {
+                tagParam.Value = tag.Id!;
+                await command.ExecuteNonQueryAsync();
+            }
+
+            return 0;
+        }
+
+
         public async Task<int> AddRecipe(Recipe recipe)
         {
             await _dbConnection.OpenAsync();
@@ -148,23 +341,24 @@ namespace webapi.Data.Repo
                 if (recipeId == -1) return -1;
 
                 // inserting into recipe_tags
-                query = @"
-                    INSERT INTO recipe_tags
-                    (tag, recipe)
-                    VALUES (@tag, @recipe)
-                    ";
-
-                command.CommandText = query;
-                command.Parameters.Clear();
-
-                NpgsqlParameter tagParam = command.Parameters.AddWithValue("tag", 0);
-                NpgsqlParameter recipeParam = command.Parameters.AddWithValue("recipe", recipeId);
-
-                foreach (Tag tag in recipe.Tags)
-                {
-                    tagParam.Value = tag.Id!;
-                    await command.ExecuteNonQueryAsync();
-                }
+                await InsertTagsToRecipe(recipe.Tags, recipe.Id, transaction);
+                // query = @"
+                //     INSERT INTO recipe_tags
+                //     (tag, recipe)
+                //     VALUES (@tag, @recipe)
+                //     ";
+                //
+                // command.CommandText = query;
+                // command.Parameters.Clear();
+                //
+                // NpgsqlParameter tagParam = command.Parameters.AddWithValue("tag", 0);
+                // NpgsqlParameter recipeParam = command.Parameters.AddWithValue("recipe", recipeId);
+                //
+                // foreach (Tag tag in recipe.Tags)
+                // {
+                //     tagParam.Value = tag.Id!;
+                //     await command.ExecuteNonQueryAsync();
+                // }
 
                 // inserting into ratings
                 query = @"
