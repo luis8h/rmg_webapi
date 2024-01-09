@@ -65,5 +65,47 @@ namespace webapi.Data.Repo
 
             return list;
         }
+
+        public async Task<int> DeleteTagsByRecipeId(int? recipeId, NpgsqlTransaction transaction)
+        {
+            string query = @"
+                delete from recipe_tags
+                where recipe = @recipe
+                ";
+
+            await using var command = new NpgsqlCommand(query, _dbConnection);
+            command.Transaction = transaction;
+
+            NpgsqlParameter recipeIdParam = command.Parameters.AddWithValue("recipe", recipeId!);
+
+            await command.ExecuteScalarAsync();
+
+            return 0;
+        }
+
+        public async Task<int> AddTagsByRecipeId(List<Tag> tags, int? recipeId, NpgsqlTransaction transaction)
+        {
+            string query = @"
+                INSERT INTO recipe_tags
+                (tag, recipe)
+                VALUES (@tag, @recipe)
+                ";
+
+            await using var command = new NpgsqlCommand(query, _dbConnection);
+            command.CommandText = query;
+            command.Transaction = transaction;
+
+            NpgsqlParameter tagParam = command.Parameters.AddWithValue("tag", 0);
+            NpgsqlParameter recipeParam = command.Parameters.AddWithValue("recipe", recipeId!);
+
+            foreach (Tag tag in tags)
+            {
+                tagParam.Value = tag.Id!;
+                await command.ExecuteNonQueryAsync();
+            }
+
+            return 0;
+        }
+
     }
 }

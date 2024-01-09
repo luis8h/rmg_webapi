@@ -45,6 +45,11 @@ namespace webapi.Controllers
             // Update the properties of the existing recipe
             existingRecipe.Name = updatedRecipe.Name;
             existingRecipe.Description = updatedRecipe.Description;
+            existingRecipe.Ratings = updatedRecipe.Ratings;
+            existingRecipe.Tags = updatedRecipe.Tags;
+            existingRecipe.Preptime = updatedRecipe.Preptime;
+            existingRecipe.Cooktime = updatedRecipe.Cooktime;
+            existingRecipe.Worktime = updatedRecipe.Worktime;
             // Update other properties as needed
 
             // Perform the update in the repository
@@ -89,9 +94,17 @@ namespace webapi.Controllers
                     var dbPath = Path.Combine(folderName, fileName);
                     using (var stream = new FileStream(fullPath, FileMode.Create))
                     {
-                        file.CopyTo(stream);
+                        // file.CopyTo(stream);
+                        await file.CopyToAsync(stream);
+
+                        // Ensure all data is written to the file system
+                        await stream.FlushAsync();
                     }
-                    return Ok(new { dbPath });
+                    // return Ok(new { dbPath });
+                    var fileInfo = new FileInfo(fullPath);
+
+                    // Return file size and path
+                    return Ok(new { Size = fileInfo.Length, dbPath });
                 }
                 else
                 {
@@ -105,6 +118,7 @@ namespace webapi.Controllers
         }
 
         [HttpGet("{recipeId}/image")]
+        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)] // for instant refresh after uploading new image
         public IActionResult GetImage(int recipeId)
         {
             var folderName = Path.Combine("Resources", "Images", "Recipes");
