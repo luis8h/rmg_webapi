@@ -321,7 +321,7 @@ namespace webapi.Data.Repo
                 command.Parameters.AddWithValue("cooktime", CheckNull(recipe.Cooktime));
                 command.Parameters.AddWithValue("worktime", CheckNull(recipe.Worktime));
                 command.Parameters.AddWithValue("difficulty", CheckNull(recipe.Difficulty));
-                command.Parameters.AddWithValue("created_by", 1);
+                command.Parameters.AddWithValue("created_by", 3);
 
                 int recipeId = (await command.ExecuteScalarAsync() as int?) ?? -1;
                 if (recipeId == -1) return -1;
