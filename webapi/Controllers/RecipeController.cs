@@ -15,10 +15,17 @@ namespace webapi.Controllers
             this._uow = uow;
         }
 
+        // [HttpGet("list")]
+        // public async Task<ActionResult<IEnumerable<DetailRecipe>>> GetRecipes()
+        // {
+        //     var recipe = await _uow.RecipeRepository.GetRecipes();
+        //     return Ok(recipe);
+        // }
+
         [HttpGet("list")]
-        public async Task<ActionResult<IEnumerable<DetailRecipe>>> GetRecipes()
+        public async Task<ActionResult<IEnumerable<DetailRecipe>>> GetRecipes2()
         {
-            var recipe = await _uow.RecipeRepository.GetRecipes();
+            var recipe = await _uow.RecipeRepository.GetRecipesWithTagsAndRatings();
             return Ok(recipe);
         }
 
@@ -96,9 +103,6 @@ namespace webapi.Controllers
                     {
                         // file.CopyTo(stream);
                         await file.CopyToAsync(stream);
-
-                        // Ensure all data is written to the file system
-                        await stream.FlushAsync();
                     }
                     // return Ok(new { dbPath });
                     var fileInfo = new FileInfo(fullPath);
@@ -127,7 +131,9 @@ namespace webapi.Controllers
             // Check if the image file exists
             if (!System.IO.File.Exists(imagePath))
             {
-                return NotFound(); // Return 404 Not Found if the image doesn't exist
+                imagePath  = Path.Combine("Resources", "Images", "Settings", "default_recipe_main_img.png");
+
+                if (!System.IO.File.Exists(imagePath)) return NotFound(); // Return 404 Not Found if the image doesn't exist
             }
 
             // Serve the image file

@@ -13,7 +13,7 @@ namespace webapi.Data.Repo
             _dbConnection = dbConnection;
         }
 
-        public async Task<List<Rating>> GetRatingsByRecipeId(int recipeId)
+        public async Task<List<Rating>> GetRatingsByRecipeIdNoConn(int recipeId)
         {
             List<Rating> list = new List<Rating>();
             string query = @"
@@ -22,7 +22,6 @@ namespace webapi.Data.Repo
                 where ra.recipe = 60
                 ";
 
-            await _dbConnection.OpenAsync();
             await using var command = new NpgsqlCommand(query, _dbConnection);
             await using var reader = await command.ExecuteReaderAsync();
 
@@ -38,12 +37,10 @@ namespace webapi.Data.Repo
                         });
             }
 
-            await _dbConnection.CloseAsync();
-
             return list;
         }
 
-        public async Task<int> DeleteRatingsByRecipeId(int? recipeId, NpgsqlTransaction transaction)
+        public async Task<int> DeleteRatingsByRecipeIdNoConn(int? recipeId, NpgsqlTransaction transaction)
         {
             string query = @"
                 delete from ratings
@@ -61,7 +58,7 @@ namespace webapi.Data.Repo
         }
 
 
-        public async Task<int> AddRatingsByRecipeId(List<Rating> ratings, int? recipeId, NpgsqlTransaction transaction)
+        public async Task<int> AddRatingsByRecipeIdNoConn(List<Rating> ratings, int? recipeId, NpgsqlTransaction transaction)
         {
             string query = @"
                 INSERT INTO ratings

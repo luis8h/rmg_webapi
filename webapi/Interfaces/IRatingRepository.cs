@@ -5,8 +5,8 @@ namespace webapi.Interfaces
 {
     public interface IRatingRepository
     {
-        Task<List<Rating>> GetRatingsByRecipeId(int recipeId);
-        Task<int> AddRatingsByRecipeId(List<Rating> ratings, int? recipeId, NpgsqlTransaction transaction);
-        Task<int> DeleteRatingsByRecipeId(int? recipeId, NpgsqlTransaction transaction);
+        Task<List<Rating>> GetRatingsByRecipeIdNoConn(int recipeId);
+        Task<int> AddRatingsByRecipeIdNoConn(List<Rating> ratings, int? recipeId, NpgsqlTransaction transaction);
+        Task<int> DeleteRatingsByRecipeIdNoConn(int? recipeId, NpgsqlTransaction transaction);
     }
 }

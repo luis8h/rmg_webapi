@@ -249,6 +249,8 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 COPY public.ratings (id, recipe, user_id, rating) FROM stdin;
 70	60	1	4
 71	60	2	5
+72	66	2	1
+75	67	2	5
 \.
 
 
@@ -258,6 +260,9 @@ COPY public.ratings (id, recipe, user_id, rating) FROM stdin;
 
 COPY public.recipe_tags (id, tag, recipe) FROM stdin;
 80	1	60
+81	2	66
+82	3	66
+87	1	67
 \.
 
 
@@ -267,10 +272,13 @@ COPY public.recipe_tags (id, tag, recipe) FROM stdin;
 
 COPY public.recipes (id, name, description, preptime, cooktime, worktime, difficulty, created_at, created_by, edited_at, edited_by) FROM stdin;
 61	test		\N	\N	\N	\N	2024-01-05 13:10:16.483838	1	\N	\N
-62	img test		\N	\N	\N	\N	2024-01-05 13:11:15.431907	1	\N	\N
 63	asdfasdf		\N	\N	\N	\N	2024-01-05 13:22:31.832862	1	\N	\N
 64	asdfasdf		\N	\N	\N	\N	2024-01-05 13:25:30.899948	1	\N	\N
 60	Spa	te	\N	\N	\N	\N	2024-01-04 12:06:51.581234	1	\N	\N
+66	FERTIG	fdas	2	3	1	\N	2024-01-13 09:19:32.492489	1	\N	\N
+68	post	\N	\N	\N	\N	\N	2024-01-13 09:24:59.467349	1	\N	\N
+62	img test		2	20	1	\N	2024-01-05 13:11:15.431907	1	\N	\N
+67	FERTIG aksljf	asdf	\N	\N	\N	\N	2024-01-13 09:23:39.091907	1	\N	\N
 \.
 
 
@@ -299,21 +307,21 @@ COPY public.users (id, username, firstname, lastname, password, email, signup_da
 -- Name: ratings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.ratings_id_seq', 71, true);
+SELECT pg_catalog.setval('public.ratings_id_seq', 75, true);
 
 
 --
 -- Name: recipe_tags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.recipe_tags_id_seq', 80, true);
+SELECT pg_catalog.setval('public.recipe_tags_id_seq', 87, true);
 
 
 --
 -- Name: recipes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.recipes_id_seq', 65, true);
+SELECT pg_catalog.setval('public.recipes_id_seq', 68, true);
 
 
 --

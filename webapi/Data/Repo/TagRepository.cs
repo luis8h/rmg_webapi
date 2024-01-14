@@ -36,7 +36,7 @@ namespace webapi.Data.Repo
             return list;
         }
 
-        public async Task<List<Tag>> GetTagsByRecipeId(int recipeId)
+        public async Task<List<Tag>> GetTagsByRecipeIdNoConn(int recipeId)
         {
             List<Tag> list = new List<Tag>();
             string query = @"
@@ -46,7 +46,6 @@ namespace webapi.Data.Repo
                 where rta.recipe = 60
                 ";
 
-            await _dbConnection.OpenAsync();
             await using var command = new NpgsqlCommand(query, _dbConnection);
             await using var reader = await command.ExecuteReaderAsync();
 
@@ -61,12 +60,10 @@ namespace webapi.Data.Repo
                         });
             }
 
-            await _dbConnection.CloseAsync();
-
             return list;
         }
 
-        public async Task<int> DeleteTagsByRecipeId(int? recipeId, NpgsqlTransaction transaction)
+        public async Task<int> DeleteTagsByRecipeIdNoConn(int? recipeId, NpgsqlTransaction transaction)
         {
             string query = @"
                 delete from recipe_tags
@@ -83,7 +80,7 @@ namespace webapi.Data.Repo
             return 0;
         }
 
-        public async Task<int> AddTagsByRecipeId(List<Tag> tags, int? recipeId, NpgsqlTransaction transaction)
+        public async Task<int> AddTagsByRecipeIdNoConn(List<Tag> tags, int? recipeId, NpgsqlTransaction transaction)
         {
             string query = @"
                 INSERT INTO recipe_tags
