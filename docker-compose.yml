@@ -12,12 +12,34 @@ services:
     volumes:
       - /var/dumps
       - ./db/setup-script/:/docker-entrypoint-initdb.d/
-      - ./db/data:/var/lib/postgresql/data # make db data persistent
-    ports:
-      - ${DB_PORT}:5432  # Map container's 5432 to host's 5432
+      - ./db/data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    networks:
+      - rmg-network
 
   adminer:
     image: adminer
     restart: always
     ports:
       - ${ADMINER_PORT}:8080
+    env_file:
+      - .env
+    networks:
+      - rmg-network
+
+  webapi-dev:
+    image: rmg-webapi
+    restart: always
+    container_name: rmg-webapi-container
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - 5297:80
+    networks:
+      - rmg-network
+
+networks:
+  rmg-network:
+    driver: bridge
+
