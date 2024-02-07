@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "XS2lPlRZ9kqOyikV5j0W2cGIhgiv3Xye6msI4n/q/XBRoJi4qEUMBGyksm71Q9uTcrfR/6V45CvfL22aeKPk+w==",
+  "dgSpecHash": "5uAx2qeja1nxzSS3IVcn6T3AH10/0+itRq0mggSvKkRQ1MypBavHOrUegqFASaMoNUGTARx5ZVHUlgp2wzajHg==",
   "success": true,
-  "projectFilePath": "/home/luis8h/data-cloud/projects/recipe-manager-web-api/webapi/webapi.csproj",
+  "projectFilePath": "/home/luis8h/data-cloud/projects/rmg_webapi/webapi/webapi.csproj",
   "expectedPackageFiles": [
     "/home/luis8h/.nuget/packages/mapster/7.4.0/mapster.7.4.0.nupkg.sha512",
     "/home/luis8h/.nuget/packages/mapster.core/1.2.1/mapster.core.1.2.1.nupkg.sha512",

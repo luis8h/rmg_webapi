@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/luis8h/data-cloud/projects/recipe-manager-web-api/webapi/webapi.csproj": {}
+    "/home/luis8h/data-cloud/projects/rmg_webapi/webapi/webapi.csproj": {}
   },
   "projects": {
-    "/home/luis8h/data-cloud/projects/recipe-manager-web-api/webapi/webapi.csproj": {
+    "/home/luis8h/data-cloud/projects/rmg_webapi/webapi/webapi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/luis8h/data-cloud/projects/recipe-manager-web-api/webapi/webapi.csproj",
+        "projectUniqueName": "/home/luis8h/data-cloud/projects/rmg_webapi/webapi/webapi.csproj",
         "projectName": "webapi",
-        "projectPath": "/home/luis8h/data-cloud/projects/recipe-manager-web-api/webapi/webapi.csproj",
+        "projectPath": "/home/luis8h/data-cloud/projects/rmg_webapi/webapi/webapi.csproj",
         "packagesPath": "/home/luis8h/.nuget/packages/",
-        "outputPath": "/home/luis8h/data-cloud/projects/recipe-manager-web-api/webapi/obj/",
+        "outputPath": "/home/luis8h/data-cloud/projects/rmg_webapi/webapi/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/luis8h/.nuget/NuGet/NuGet.Config"
@@ -78,7 +78,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/7.0.114/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/7.0.115/RuntimeIdentifierGraph.json"
         }
       }
     }

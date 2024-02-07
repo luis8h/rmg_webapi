@@ -1,6 +1,16 @@
 version: '3.8'
 
 services:
+
+  # webapi-dev:
+  #   image: luis8h/rmg_webapi:dev
+  #   restart: always
+  #   container_name: rmg-webapi-container
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #   ports:
+  #     - 5297:80
+  #
   db:
     image: postgres:latest
     restart: always
@@ -11,12 +21,11 @@ services:
       POSTGRES_DB: ${DB_NAME}
     volumes:
       - /var/dumps
-      - ./db/setup-script/:/docker-entrypoint-initdb.d/
       - ./db/data:/var/lib/postgresql/data
     env_file:
       - .env
-    networks:
-      - rmg-network
+    ports:
+      - ${DB_PORT}:5432
 
   adminer:
     image: adminer
@@ -25,21 +34,4 @@ services:
       - ${ADMINER_PORT}:8080
     env_file:
       - .env
-    networks:
-      - rmg-network
-
-  webapi-dev:
-    image: rmg-webapi
-    restart: always
-    container_name: rmg-webapi-container
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-    ports:
-      - 5297:80
-    networks:
-      - rmg-network
-
-networks:
-  rmg-network:
-    driver: bridge
 
