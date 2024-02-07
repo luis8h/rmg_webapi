@@ -76,3 +76,4 @@
 /home/luis8h/data-cloud/projects/rmg_webapi/webapi/obj/Debug/net7.0/webapi.pdb
 /home/luis8h/data-cloud/projects/rmg_webapi/webapi/obj/Debug/net7.0/webapi.genruntimeconfig.cache
 /home/luis8h/data-cloud/projects/rmg_webapi/webapi/obj/Debug/net7.0/ref/webapi.dll
+/home/luis8h/data-cloud/projects/rmg_webapi/webapi/bin/Debug/net7.0/appsettings.Staging.json
