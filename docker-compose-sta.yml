@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+
+  rmg_webapi_sta:
+    image: luis8h/rmg_webapi:sta
+    restart: on-failure
+    container_name: rmg_webapi_sta
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Staging
+    ports:
+      - 5298:80
+    networks:
+      - rmg-network-sta
+
+networks:
+  rmg-network-sta:
+    driver: bridge
+
+
