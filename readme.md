@@ -6,8 +6,8 @@
 ## db
 ### liquibase
 #### commands
--   rollback to a db version: ```liquibase rollback --tag='v0.0.1' --labelFilter='!v0.0.1'```
-    (the reason for the labelfilter is that otherwise the specified tag would also get reverted)
+-   rollback to a db version: ```liquibase rollback --tag='v0.0.1' --labelFilter='!tagset:v0.0.1'```
+    (the reason for the labelfilter is that otherwise the specified changeset of the tag would also get reverted)
 
 
 ## production environment
