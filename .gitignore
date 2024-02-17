@@ -1,2 +1,5 @@
 .env
-db/data/
+db/dev-data/
+db/sta-data/
+webapi/bin/
+webapi/obj/

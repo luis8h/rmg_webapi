@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+
+  db_dev:
+    image: postgres:latest
+    restart: on-failure
+    container_name: rmg_db_dev
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - /var/dumps
+      - ./db/dev-data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    networks:
+      - rmg-network-dev
+    ports:
+      - ${DB_PORT_DEV}:5432
+
+  adminer_dev:
+    image: adminer
+    container_name: rmg_adminer_dev
+    restart: on-failure
+    ports:
+      - ${ADMINER_PORT_DEV}:8080
+    env_file:
+      - .env
+    networks:
+      - rmg-network-dev
+
+networks:
+  rmg-network-dev:
+    driver: bridge
+
+
