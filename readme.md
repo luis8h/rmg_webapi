@@ -3,6 +3,13 @@
 ## dependencies
 -   [Mapster](https://github.com/MapsterMapper/Mapster) (installed with: dotnet add package Mapster)
 
+## db
+### liquibase
+#### commands
+-   rollback to a db version: ```liquibase rollback --tag='v0.0.1' --labelFilter='!v0.0.1'```
+    (the reason for the labelfilter is that otherwise the specified tag would also get reverted)
+
+
 ## production environment
 
 ### docker-compose
