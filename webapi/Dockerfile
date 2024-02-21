@@ -1,3 +1,5 @@
+### webapi
+
 # Use an official .NET runtime as a base image
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 
@@ -27,6 +29,14 @@ RUN dotnet build "webapi.csproj" -c Release -o /app/build
 FROM build AS publish
 # Publish the applicationin Release configuration to a folder named 'publish'
 RUN dotnet publish "webapi.csproj" -c Release -o /app/publish
+
+
+
+### liquibase
+
+
+
+### final setup
 
 # NAme the current stage of the build as final
 FROM base AS final
