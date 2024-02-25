@@ -62,10 +62,4 @@ COPY ./entrypoint.sh entrypoint.sh
 
 
 ### entrypoint
-
-# Set the command to run Liquibase update before starting the API
-# WORKDIR /app
-# ENTRYPOINT [ "sh", "-c", "liquibase update --changeLogFile=../liquibase/db.changelog-root.xml --defaultsFile=../liquibase/sta.liquibase.properties && dotnet webapi.dll" ]
-
-# ENTRYPOINT [ "sh", "-c", "dotnet webapi.dll" ]
 ENTRYPOINT ["/entrypoint.sh"]
