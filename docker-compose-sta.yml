@@ -36,7 +36,8 @@ services:
     restart: on-failure
     container_name: rmg_webapi_sta
     environment:
-      - ASPNETCORE_ENVIRONMENT=Staging
+      DB_PASSWORD: ${DB_PASSWORD}
+      ASPNETCORE_ENVIRONMENT: Staging
     ports:
       - 5298:80
     networks:
