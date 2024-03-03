@@ -25,5 +25,6 @@ cd ..
 echo "... finished!"
 
 echo "starting webapi..."
-dotnet /app/webapi.dll
+cd app
+dotnet webapi.dll
 
