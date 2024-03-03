@@ -6,6 +6,10 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
+VERSION="v$1"
+REGISTRY="192.168.188.179:5000"
+IMAGE_NAME="luis8h/rmg_webapi"
+
 # Check if the current branch is main
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 if [ "$CURRENT_BRANCH" != "main" ]; then
@@ -13,15 +17,19 @@ if [ "$CURRENT_BRANCH" != "main" ]; then
     exit 1
 fi
 
-VERSION="v$1"
-REGISTRY="192.168.188.179:5000"
-IMAGE_NAME="luis8h/rmg_webapi"
+# Check if any existing tag matches the version
+if git tag --list | grep -q "$VERSION"; then
+    echo "Error: A tag with a version-like name already exists. Please ensure the version is unique."
+    exit 1
+fi
+
+
+docker login "$REGISTRY"
+docker buildx build -t "$REGISTRY/$IMAGE_NAME:$VERSION" .
+docker push "$REGISTRY/$IMAGE_NAME:$VERSION"
 
 git add .
 git commit -m "release: ${VERSION}"
 git push
 git tag $VERSION
 
-docker login "$REGISTRY"
-docker buildx build -t "$REGISTRY/$IMAGE_NAME:$VERSION" .
-docker push "$REGISTRY/$IMAGE_NAME:$VERSION"
