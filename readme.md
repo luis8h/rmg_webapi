@@ -21,7 +21,7 @@ services:
   rmg_db_pro:
     image: postgres:latest
     restart: always
-    container_name: rmg_db
+    container_name: rmg_db_pro
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -38,7 +38,7 @@ services:
 
   rmg_adminer_pro:
     image: adminer
-    container_name: rmg_adminer
+    container_name: rmg_adminer_pro
     restart: always
     ports:
       - ${ADMINER_PORT}:8080
@@ -50,13 +50,14 @@ services:
   rmg_webapi_pro:
     image: localhost:5000/luis8h/rmg_webapi:v0.0.0
     restart: always
-    container_name: rmg_webapi
+    container_name: rmg_webapi_pro
     ports:
       - 5297:80
     networks:
       - rmg-network
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      ASPNETCORE_ENVIRONMENT: Production
+      DB_PASSWORD: ${DB_PASSWORD}
 
 networks:
   rmg-network:

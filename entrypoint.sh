@@ -5,7 +5,7 @@ cd liquibase
 
 if [ "${ASPNETCORE_ENVIRONMENT}" = "Staging" ]; then
     echo "staging environment"
-    liquibase update --defaultsFile=sta.liquibase.properties
+    # liquibase update --defaultsFile=sta.liquibase.properties
     liquibase update \
         --url="jdbc:postgresql://rmg_db_sta:5432/rmg_db" \
         --username="postgres" \
