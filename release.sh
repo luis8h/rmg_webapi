@@ -23,5 +23,5 @@ git push
 git tag $VERSION
 
 docker login "$REGISTRY"
-docker buildx build -t "$REGISTRY/$IMAGE_NAME:$VERSION" ./webapi
+docker buildx build -t "$REGISTRY/$IMAGE_NAME:$VERSION" .
 docker push "$REGISTRY/$IMAGE_NAME:$VERSION"
