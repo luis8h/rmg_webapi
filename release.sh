@@ -23,11 +23,27 @@ if git tag --list | grep -q "$VERSION"; then
     exit 1
 fi
 
-
+# Docker login
 docker login "$REGISTRY"
-docker buildx build -t "$REGISTRY/$IMAGE_NAME:$VERSION" .
-docker push "$REGISTRY/$IMAGE_NAME:$VERSION"
+if [ $? -ne 0 ]; then
+    echo "Error: Docker login failed."
+    exit 1
+fi
 
+# Build and push Docker image
+docker buildx build -t "$REGISTRY/$IMAGE_NAME:$VERSION" .
+if [ $? -ne 0 ]; then
+    echo "Error: Docker build failed."
+    exit 1
+fi
+
+docker push "$REGISTRY/$IMAGE_NAME:$VERSION"
+if [ $? -ne 0 ]; then
+    echo "Error: Docker push failed."
+    exit 1
+fi
+
+# Git operations
 git add .
 git commit -m "release: ${VERSION}"
 git push
