@@ -41,6 +41,8 @@ if (app.Environment.IsDevelopment())
 }
 
 
+// should be changed later for security
+app.UseCors(m => m.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 app.UseHttpsRedirection();
 
 // app.UseStaticFiles();
