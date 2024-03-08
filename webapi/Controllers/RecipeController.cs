@@ -87,6 +87,8 @@ namespace webapi.Controllers
         [HttpPost, DisableRequestSizeLimit]
         public async Task<IActionResult> UploadAsync(int recipeId)
         {
+            Console.WriteLine("Uploading image ...");
+
             try
             {
                 var formCollection = await Request.ReadFormAsync();
@@ -117,6 +119,7 @@ namespace webapi.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 return StatusCode(500, $"Internal server error: {ex}");
             }
         }
@@ -125,8 +128,18 @@ namespace webapi.Controllers
         [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)] // for instant refresh after uploading new image
         public IActionResult GetImage(int recipeId)
         {
+            Console.WriteLine("Serving Image ...");
+
             var folderName = Path.Combine("Resources", "Images", "Recipes");
-            var imagePath = Path.Combine(folderName, "main_" + recipeId + ".png"); // Assuming JPG extension
+            var workingDir = Directory.GetCurrentDirectory();
+            var imagePath = Path.Combine(workingDir, folderName, "main_" + recipeId + ".png"); // Assuming JPG extension
+
+            Console.WriteLine(imagePath);
+
+            if (!System.IO.File.Exists(imagePath))
+            {
+                imagePath = Path.Combine(workingDir, folderName, "main_" + recipeId + ".jpg");
+            }
 
             // Check if the image file exists
             if (!System.IO.File.Exists(imagePath))

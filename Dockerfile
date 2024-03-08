@@ -37,7 +37,7 @@ WORKDIR /app
 # Copy the application from the 'publish' stage to the current stage
 COPY --from=publish /app/publish .
 
-
+RUN mkdir -p /app/Resources/Images/Recipes
 
 ### liquibase
 WORKDIR /
