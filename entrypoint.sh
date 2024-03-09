@@ -24,6 +24,8 @@ fi
 cd ..
 echo "... finished!"
 
+mkdir -p /app/Resources/Images/Recipes
+
 echo "starting webapi..."
 cd app
 dotnet webapi.dll
