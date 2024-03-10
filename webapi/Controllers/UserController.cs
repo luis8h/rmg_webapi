@@ -19,5 +19,18 @@ namespace webapi.Controllers
             var users = await _uow.UserRepository.GetUsers();
             return Ok(users);
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(User user)
+        {
+            var user = await this.uow.UserRepository.Authenticate(user.UserName, user.Password);
+
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            return Ok(user);
+        }
     }
 }

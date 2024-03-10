@@ -13,6 +13,29 @@ namespace webapi.Data.Repo
             _dbConnection = dbConnection;
         }
 
+        public async Task<User> Authenticate(string userName, string password)
+        {
+            string query = "select id, username from users where username = @username and password = @password";
+            await _dbConnection.OpenAsync();
+            await using var command = new NpgsqlCommand(query, dbConection);
+            command.Parameters.AddWithValue("username", userName);
+            await using var reader = await command.ExecuteReaderAsync();
+
+            User authuser;
+
+            while (await reader.ReadAsync())
+            {
+                authuser = new User
+                {
+                    Id = reader["id"] == System.DBNull.Value ? -1 : Convert.ToInt32(reader["id"]),
+                    UserName = reader["username"].ToString()
+                };
+            }
+
+            await _dbConnection.CloseAsync();
+            return authuser;
+        }
+
         public async Task<List<User>> GetUsers()
         {
             List<User> list = new List<User>();
