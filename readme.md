@@ -1,7 +1,11 @@
 # Recipe Manager web API
 
 ## dependencies
--   [Mapster](https://github.com/MapsterMapper/Mapster) (installed with: dotnet add package Mapster)
+[Mapster](https://github.com/MapsterMapper/Mapster) (installed with: dotnet add package Mapster)
+
+#### packages:
+- dotnet add package System.IdentityModel.Tokens.Jwt
+- dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer --version 8.0.2
 
 ## db
 ### liquibase

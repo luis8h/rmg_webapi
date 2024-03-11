@@ -1,8 +1,12 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using webapi.Data;
 using webapi.Interfaces;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +22,22 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // user cors for access control (allow all access)
 builder.Services.AddCors();
+
+// authentication
+var secretKey = builder.Configuration.GetSection("AppSettings:Key").Value;
+var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!));
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(opt => {
+            opt.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                IssuerSigningKey = key,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+            };
+    });
 
 builder.Services.Configure<FormOptions>(o =>
 {
@@ -38,6 +58,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseCors(m => m.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+    app.UseAuthentication();
+    app.UseAuthorization();
 }
 
 

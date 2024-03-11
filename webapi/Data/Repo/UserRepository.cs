@@ -13,22 +13,23 @@ namespace webapi.Data.Repo
             _dbConnection = dbConnection;
         }
 
-        public async Task<User> Authenticate(string userName, string password)
+        public async Task<User>? Authenticate(string userName, string password)
         {
             string query = "select id, username from users where username = @username and password = @password";
             await _dbConnection.OpenAsync();
-            await using var command = new NpgsqlCommand(query, dbConection);
+            await using var command = new NpgsqlCommand(query, _dbConnection);
             command.Parameters.AddWithValue("username", userName);
+            command.Parameters.AddWithValue("password", password);
             await using var reader = await command.ExecuteReaderAsync();
 
-            User authuser;
+            User? authuser = null;
 
             while (await reader.ReadAsync())
             {
                 authuser = new User
                 {
                     Id = reader["id"] == System.DBNull.Value ? -1 : Convert.ToInt32(reader["id"]),
-                    UserName = reader["username"].ToString()
+                    Username = reader["username"].ToString()
                 };
             }
 
@@ -48,13 +49,13 @@ namespace webapi.Data.Repo
             while (await reader.ReadAsync())
             {
                 list.Add(new User
-                        {
-                        Id = Convert.ToInt32(reader["id"]),
-                        Firstname = reader["firstname"].ToString(),
-                        Lastname = reader["lastname"].ToString(),
-                        Username = reader["username"].ToString(),
-                        Email = reader["email"].ToString()
-                        });
+                {
+                    Id = Convert.ToInt32(reader["id"]),
+                    Firstname = reader["firstname"].ToString(),
+                    Lastname = reader["lastname"].ToString(),
+                    Username = reader["username"].ToString(),
+                    Email = reader["email"].ToString()
+                });
             }
 
             await _dbConnection.CloseAsync();
