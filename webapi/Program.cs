@@ -1,12 +1,12 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using webapi.Data;
+using webapi.Extensions;
 using webapi.Interfaces;
-
+using webapi.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,8 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// builder.Services.AddEndpointsApiExplorer();
+// builder.Services.AddSwaggerGen();
 
 // register UnitOfWork to work as main controller
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -55,26 +55,22 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    app.UseCors(m => m.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-    app.UseAuthentication();
-    app.UseAuthorization();
+    // code only for dev environment
 }
 
 
-// should be changed later for security
+app.ConfigureExceptionHandler(app.Environment);
+// builtin Exception Hanlder
+// app.ConfigureBuiltinExceptionHandler(app.Environment);
+
+
+// TODO: change for more security
 app.UseCors(m => m.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-app.UseHttpsRedirection();
 
-// app.UseStaticFiles();
-// app.UseStaticFiles(new StaticFileOptions()
-// {
-//     FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Resources")),
-//     RequestPath = new PathString("/Resources")
-// });
-
+app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseHttpsRedirection();
 
 app.MapControllers();
 

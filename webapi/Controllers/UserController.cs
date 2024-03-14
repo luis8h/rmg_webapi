@@ -44,7 +44,7 @@ namespace webapi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(User loginuser)
         {
-            User? user = await this._uow.UserRepository.Authenticate(loginuser.Username, loginuser.Password);
+            User? user = await _uow.UserRepository.Authenticate(loginuser.Username, loginuser.Password);
 
             if (user == null)
             {
