@@ -11,4 +11,3 @@ alter table users add column password_key bytea;
 
 -- rollback alter table users drop column password_key;
 
-

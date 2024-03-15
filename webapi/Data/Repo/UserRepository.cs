@@ -1,3 +1,4 @@
+using System.Security.Authentication;
 using System.Security.Cryptography;
 using Npgsql;
 using webapi.Interfaces;
@@ -14,40 +15,50 @@ namespace webapi.Data.Repo
             _dbConnection = dbConnection;
         }
 
-        public async Task<User>? Authenticate(string userName, string passwordText)
+        public async Task<User> Authenticate(string username, string passwordText)
         {
-            string query = "select id, password_hashed, password_key, username from users where username = @username";
             await _dbConnection.OpenAsync();
+            User? user = await GetUser(username);
+            await _dbConnection.CloseAsync();
+
+            if (user == null)
+                throw new AuthenticationException();
+
+            if (!MatchPasswordHash(passwordText, user?.PasswordHashed, user?.PasswordKey))
+                throw new AuthenticationException();
+
+            return user!;
+        }
+
+        private async Task<User?> GetUser(string username) {
+            string query = "select id, password_hashed, password_key, username from users where username = @username";
             await using var command = new NpgsqlCommand(query, _dbConnection);
-            command.Parameters.AddWithValue("username", userName);
+
+            command.Parameters.AddWithValue("username", username);
+
             await using var reader = await command.ExecuteReaderAsync();
 
-            User? authuser = null;
+            User? user = null;
 
             while (await reader.ReadAsync())
             {
-                authuser = new User
+                user = new User
                 {
-                    Id = reader["id"] == System.DBNull.Value ? -1 : Convert.ToInt32(reader["id"]),
-                    Username = reader["username"] == System.DBNull.Value ? null: reader["username"].ToString(),
-                    PasswordHashed = reader["password_hashed"] == System.DBNull.Value ? null: (byte[])reader["password_hashed"],
-                    PasswordKey = reader["password_key"] == System.DBNull.Value ? null: (byte[])reader["password_key"]
+                    Id = Convert.ToInt32(reader["id"]),
+                    Username = reader["username"].ToString(),
+                    PasswordHashed = (byte[]) reader["password_hashed"],
+                    PasswordKey = (byte[]) reader["password_key"],
                 };
             }
 
-            await _dbConnection.CloseAsync();
-
-            if (authuser == null || authuser.PasswordKey  == null || authuser.PasswordHashed == null)
-                return null;
-
-            if (!MatchPasswordHash(passwordText, authuser.PasswordHashed, authuser.PasswordKey))
-                return null;
-
-            return authuser;
+            return user;
         }
 
-        private bool MatchPasswordHash(string passwordText, byte[] passwordHashed, byte[] passwordKey)
+        private bool MatchPasswordHash(string passwordText, byte[] ?passwordHashed = null, byte[] ?passwordKey = null)
         {
+            if (passwordHashed == null || passwordKey == null)
+                return false;
+
             using (var hmac = new HMACSHA256(passwordKey))
             {
                 var passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(passwordText));
