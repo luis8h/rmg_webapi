@@ -33,7 +33,7 @@ namespace webapi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register(LoginReqDto loginReq)
         {
-            if (await _uow.UserRepository.UserAlreadyExists(loginReq.Username!))
+            if (await _uow.UserRepository.UserAlreadyExists(loginReq.Username))
                 return BadRequest("User already exists, please try something else");
 
             _uow.UserRepository.Register(loginReq.Username!, loginReq.Password!);
@@ -44,7 +44,7 @@ namespace webapi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(User loginuser)
         {
-            User? user = await _uow.UserRepository.Authenticate(loginuser.Username, loginuser.Password);
+            User user = await _uow!.UserRepository!.Authenticate(loginuser!.Username!, loginuser!.Password!);
 
             if (user == null)
             {

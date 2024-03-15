@@ -185,46 +185,6 @@ namespace webapi.Data.Repo
             return recipe;
         }
 
-        // public async Task<List<DetailRecipe>> GetRecipes()
-        // {
-        //     List<DetailRecipe> list = new List<DetailRecipe>();
-        //     string query = @"
-        //         SELECT
-        //         re.id as id,
-        //         re.name as name,
-        //         re.description as description,
-        //         avg(ra.rating) as avg_rating,
-        //         array_agg(row_to_json(ra)) as ratings,
-        //         array_agg(row_to_json(ta)) as tags
-        //             FROM recipes re
-        //             left join ratings ra on ra.recipe = re.id
-        //             left join recipe_tags rta on rta.recipe = re.id
-        //             left join tags ta on ta.id = rta.tag
-        //             group by re.id
-        //             ";
-        //
-        //     await _dbConnection.OpenAsync();
-        //     await using var command = new NpgsqlCommand(query, _dbConnection);
-        //     await using var reader = await command.ExecuteReaderAsync();
-        //
-        //     while (await reader.ReadAsync())
-        //     {
-        //         list.Add(new DetailRecipe()
-        //         {
-        //             Id = Convert.ToInt32(reader["id"]),
-        //             Description = reader["Description"].ToString(),
-        //             Name = reader["Name"].ToString(),
-        //             AvgRating = reader["avg_rating"] != DBNull.Value ? Convert.ToSingle(reader["avg_rating"]) : null,
-        //             // Tags = await _tagRepository.GetTagsByRecipeIdNoConn(Convert.ToInt32(reader["id"])),
-        //             // Ratings = await _ratingRepository.GetRatingsByRecipeIdNoConn(Convert.ToInt32(reader["id"])),
-        //         });
-        //     }
-        //
-        //     await _dbConnection.CloseAsync();
-        //
-        //     return list;
-        // }
-
         private object CheckNull(int? value)
         {
             return value.HasValue ? (object)value.Value : DBNull.Value;

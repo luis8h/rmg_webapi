@@ -17,9 +17,7 @@ namespace webapi.Data.Repo
 
         public async Task<User> Authenticate(string username, string passwordText)
         {
-            await _dbConnection.OpenAsync();
             User? user = await GetUser(username);
-            await _dbConnection.CloseAsync();
 
             if (user == null)
                 throw new AuthenticationException();
@@ -30,7 +28,10 @@ namespace webapi.Data.Repo
             return user!;
         }
 
-        private async Task<User?> GetUser(string username) {
+        private async Task<User?> GetUser(string username)
+        {
+            await _dbConnection.OpenAsync();
+
             string query = "select id, password_hashed, password_key, username from users where username = @username";
             await using var command = new NpgsqlCommand(query, _dbConnection);
 
@@ -50,6 +51,8 @@ namespace webapi.Data.Repo
                     PasswordKey = (byte[]) reader["password_key"],
                 };
             }
+
+            await _dbConnection.CloseAsync();
 
             return user;
         }

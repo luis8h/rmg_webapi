@@ -1,8 +1,6 @@
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Mvc;
 using webapi.Interfaces;
-using webapi.Models.Basic;
-using webapi.Models.Extended;
 
 namespace webapi.Controllers
 {
