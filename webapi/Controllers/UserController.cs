@@ -23,9 +23,11 @@ namespace webapi.Controllers
         }
 
         [HttpGet("list")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            var users = await _uow.UserRepository.GetUsers();
+            // var users = await _uow.UserRepository.GetUsers();
+            var users = await _uow.UserRepository.AccessDB(_uow.UserRepository.GetUsers);
             return Ok(users);
         }
 
