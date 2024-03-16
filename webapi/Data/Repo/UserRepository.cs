@@ -6,7 +6,7 @@ using webapi.Models.Basic;
 
 namespace webapi.Data.Repo
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : BaseRepo, IUserRepository
     {
         private readonly NpgsqlConnection _dbConnection;
 
