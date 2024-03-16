@@ -7,6 +7,8 @@ using System.Security.Claims;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Authentication;
+using System.Security.Cryptography;
 
 namespace webapi.Controllers
 {
@@ -26,8 +28,8 @@ namespace webapi.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            // var users = await _uow.UserRepository.GetUsers();
-            var users = await _uow.UserRepository.AccessDB(_uow.UserRepository.GetUsers);
+            var users = await _uow.UserRepository.GetUsers();
+            // var users = await _uow.UserRepository.AccessDB(_uow.UserRepository.GetUsers);
             return Ok(users);
         }
 
@@ -38,7 +40,7 @@ namespace webapi.Controllers
             if (await _uow.UserRepository.UserAlreadyExists(loginReq.Username))
                 return BadRequest("User already exists, please try something else");
 
-            _uow.UserRepository.Register(loginReq.Username!, loginReq.Password!);
+            Register(loginReq.Username!, loginReq.Password!);
             return StatusCode(201);
         }
 
@@ -46,7 +48,7 @@ namespace webapi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(User loginuser)
         {
-            User user = await _uow!.UserRepository!.Authenticate(loginuser!.Username!, loginuser!.Password!);
+            User user = await Authenticate(loginuser!.Username!, loginuser!.Password!);
 
             if (user == null)
             {
@@ -58,6 +60,57 @@ namespace webapi.Controllers
             loginRes.Token = CreateJWT(user);
 
             return Ok(loginRes);
+        }
+
+        private void Register(string username, string password)
+        {
+            byte[] passwordHash, passwordKey;
+            using (var hmac = new HMACSHA256())
+            {
+                passwordKey = hmac.Key;
+                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            }
+
+            User user = new User();
+            user.Username = username;
+            user.PasswordHashed = passwordHash;
+            user.PasswordKey = passwordKey;
+
+            Console.WriteLine("creating user ...");
+
+            _uow.UserRepository.addUser(user);
+        }
+
+        private async Task<User> Authenticate(string username, string passwordText)
+        {
+            User? user = await _uow.UserRepository.GetUser(username);
+
+            if (user == null)
+                throw new AuthenticationException();
+
+            if (!MatchPasswordHash(passwordText, user?.PasswordHashed, user?.PasswordKey))
+                throw new AuthenticationException();
+
+            return user!;
+        }
+
+        private bool MatchPasswordHash(string passwordText, byte[] ?passwordHashed = null, byte[] ?passwordKey = null)
+        {
+            if (passwordHashed == null || passwordKey == null)
+                return false;
+
+            using (var hmac = new HMACSHA256(passwordKey))
+            {
+                var passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(passwordText));
+
+                for (int i = 0; i < passwordHash.Length; i++)
+                {
+                    if (passwordHash[i] != passwordHashed[i])
+                        return false;
+                }
+
+                return true;
+            }
         }
 
         private string CreateJWT(User user)

@@ -6,7 +6,7 @@ using webapi.Models.Basic;
 
 namespace webapi.Data.Repo
 {
-    public class UserRepository : BaseRepo, IUserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly NpgsqlConnection _dbConnection;
 
@@ -15,20 +15,7 @@ namespace webapi.Data.Repo
             _dbConnection = dbConnection;
         }
 
-        public async Task<User> Authenticate(string username, string passwordText)
-        {
-            User? user = await GetUser(username);
-
-            if (user == null)
-                throw new AuthenticationException();
-
-            if (!MatchPasswordHash(passwordText, user?.PasswordHashed, user?.PasswordKey))
-                throw new AuthenticationException();
-
-            return user!;
-        }
-
-        private async Task<User?> GetUser(string username)
+        public async Task<User?> GetUser(string username)
         {
             await _dbConnection.OpenAsync();
 
@@ -47,8 +34,8 @@ namespace webapi.Data.Repo
                 {
                     Id = Convert.ToInt32(reader["id"]),
                     Username = reader["username"].ToString(),
-                    PasswordHashed = (byte[]) reader["password_hashed"],
-                    PasswordKey = (byte[]) reader["password_key"],
+                    PasswordHashed = (byte[])reader["password_hashed"],
+                    PasswordKey = (byte[])reader["password_key"],
                 };
             }
 
@@ -57,24 +44,6 @@ namespace webapi.Data.Repo
             return user;
         }
 
-        private bool MatchPasswordHash(string passwordText, byte[] ?passwordHashed = null, byte[] ?passwordKey = null)
-        {
-            if (passwordHashed == null || passwordKey == null)
-                return false;
-
-            using (var hmac = new HMACSHA256(passwordKey))
-            {
-                var passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(passwordText));
-
-                for (int i = 0; i < passwordHash.Length; i++)
-                {
-                    if (passwordHash[i] != passwordHashed[i])
-                        return false;
-                }
-
-                return true;
-            }
-        }
 
         public async Task<List<User>> GetUsers()
         {
@@ -102,26 +71,8 @@ namespace webapi.Data.Repo
             return list;
         }
 
-        public void Register(string username, string password)
-        {
-            byte[] passwordHash, passwordKey;
-            using (var hmac = new HMACSHA256())
-            {
-                passwordKey = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            }
 
-            User user = new User();
-            user.Username = username;
-            user.PasswordHashed = passwordHash;
-            user.PasswordKey = passwordKey;
-
-            Console.WriteLine("creating user ...");
-
-            addUser(user);
-        }
-
-        private async void addUser(User user)
+        public async void addUser(User user)
         {
             string query = @"
                 insert into users
