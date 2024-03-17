@@ -47,22 +47,20 @@ namespace webapi.Data.Repo
 
         public async Task<List<User>> GetUsers()
         {
-            List<User> list = new List<User>();
-            string query = "SELECT id, firstname, lastname, username, email FROM users";
-
             await _dbConnection.OpenAsync();
-            await using var command = new NpgsqlCommand(query, _dbConnection);
+            await using var command = new NpgsqlCommand("SELECT id, firstname, lastname, username FROM users", _dbConnection);
             await using var reader = await command.ExecuteReaderAsync();
+
+            List<User> list = new List<User>();
 
             while (await reader.ReadAsync())
             {
                 list.Add(new User
                 {
                     Id = Convert.ToInt32(reader["id"]),
-                    Firstname = reader["firstname"].ToString(),
-                    Lastname = reader["lastname"].ToString(),
-                    Username = reader["username"].ToString(),
-                    Email = reader["email"].ToString()
+                    Firstname = reader["firstname"]?.ToString(),
+                    Lastname = reader["lastname"]?.ToString(),
+                    Username = reader["username"]?.ToString(),
                 });
             }
 
