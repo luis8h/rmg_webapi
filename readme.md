@@ -6,6 +6,7 @@
 #### packages:
 - dotnet add package System.IdentityModel.Tokens.Jwt
 - dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer --version 8.0.2
+- dotnet add package Dapper --version 2.1.35
 
 ## db
 ### liquibase

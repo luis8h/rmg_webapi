@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Authentication;
 using webapi.Errors;
 
 namespace webapi.Middlewares
@@ -39,19 +40,23 @@ namespace webapi.Middlewares
                 {
                     statusCode = HttpStatusCode.Forbidden;
                     message = "You are not authorized";
+                } else if (exceptionType == typeof(AuthenticationException))
+                {
+                    statusCode = HttpStatusCode.Forbidden;
+                    message = "Authentication Failed";
                 } else {
                     statusCode = HttpStatusCode.InternalServerError;
-                    message = "Unknown Error";
+                    message = ex.Message == null ? "Unknown Error" : ex.Message;
                 }
 
                 if (env.IsDevelopment())
                 {
-                    response = new ApiError((int) statusCode, ex.Message, ex.StackTrace!.ToString());
+                    response = new ApiError((int) statusCode, message, ex.StackTrace!.ToString());
                 } else {
                     response = new ApiError((int) statusCode, message);
                 }
 
-                logger.LogError(ex, ex.Message);
+                logger.LogError(ex, message);
 
                 context.Response.StatusCode = (int) statusCode;
                 context.Response.ContentType = "application/json";

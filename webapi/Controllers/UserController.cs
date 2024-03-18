@@ -17,14 +17,17 @@ namespace webapi.Controllers
     {
         private readonly IUnitOfWork _uow;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(IUnitOfWork uow, IConfiguration configuration)
+        public UserController(IUnitOfWork uow, IConfiguration configuration, ILogger<UserController> logger)
         {
             this._uow = uow;
             this._configuration = configuration;
+            this._logger = logger;
         }
 
         [HttpGet("list")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
             var users = await _uow.UserRepository.GetUsers();
@@ -42,6 +45,15 @@ namespace webapi.Controllers
             Register(loginReq.Username!, loginReq.Password!);
             return StatusCode(201);
         }
+
+        [HttpGet("get/{username}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetUser(string username)
+        {
+            var user = await _uow.UserRepository.GetUser(username);
+            return Ok(user);
+        }
+
 
         [HttpPost("login")]
         [AllowAnonymous]
@@ -75,8 +87,6 @@ namespace webapi.Controllers
             user.PasswordHashed = passwordHash;
             user.PasswordKey = passwordKey;
 
-            Console.WriteLine("creating user ...");
-
             _uow.UserRepository.addUser(user);
         }
 
@@ -105,7 +115,9 @@ namespace webapi.Controllers
                 for (int i = 0; i < passwordHash.Length; i++)
                 {
                     if (passwordHash[i] != passwordHashed[i])
+                    {
                         return false;
+                    }
                 }
 
                 return true;

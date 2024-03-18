@@ -6,16 +6,12 @@ using Npgsql;
 using webapi.Data;
 using webapi.Extensions;
 using webapi.Interfaces;
-using webapi.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-// builder.Services.AddEndpointsApiExplorer();
-// builder.Services.AddSwaggerGen();
+builder.Services.AddLogging();
 
 // register UnitOfWork to work as main controller
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -58,6 +54,8 @@ if (app.Environment.IsDevelopment())
     // code only for dev environment
 }
 
+// dapper configuration to map db columns with underscores to Attributes without
+Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
 app.ConfigureExceptionHandler(app.Environment);
 // builtin Exception Hanlder
