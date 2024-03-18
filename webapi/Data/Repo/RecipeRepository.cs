@@ -107,7 +107,7 @@ namespace webapi.Data.Repo
 
         public async Task<Recipe> GetRecipeById(int recipeId)
         {
-            string query = @"
+            const string query = @"
                     SELECT
                     re.id as recipe_id,
                     re.name as recipe_name,
