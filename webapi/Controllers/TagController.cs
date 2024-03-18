@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using webapi.Interfaces;
 using webapi.Models.Basic;
 
 namespace webapi.Controllers
 {
+    [Authorize]
     public class TagController : BaseController
     {
         private readonly IUnitOfWork _uow;

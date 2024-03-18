@@ -9,6 +9,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Authentication;
 using System.Security.Cryptography;
+using Mapster;
 
 namespace webapi.Controllers
 {
@@ -27,19 +28,17 @@ namespace webapi.Controllers
         }
 
         [HttpGet("list")]
-        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
             var users = await _uow.UserRepository.GetUsers();
-            // var users = await _uow.UserRepository.AccessDB(_uow.UserRepository.GetUsers);
-            return Ok(users);
+            var usersDto = users.Adapt<List<UserDto>>();
+            return Ok(usersDto);
         }
 
         [HttpPost("register")]
-        [AllowAnonymous]
         public async Task<IActionResult> Register(LoginReqDto loginReq)
         {
-            if (await _uow.UserRepository.UserAlreadyExists(loginReq.Username))
+            if (await UserExists(loginReq.Username))
                 return BadRequest("User already exists, please try something else");
 
             Register(loginReq.Username!, loginReq.Password!);
@@ -47,11 +46,11 @@ namespace webapi.Controllers
         }
 
         [HttpGet("get/{username}")]
-        [AllowAnonymous]
         public async Task<IActionResult> GetUser(string username)
         {
             var user = await _uow.UserRepository.GetUser(username);
-            return Ok(user);
+            var userDto = user.Adapt<UserDto>();
+            return Ok(userDto);
         }
 
 
@@ -71,6 +70,16 @@ namespace webapi.Controllers
             loginRes.Token = CreateJWT(user);
 
             return Ok(loginRes);
+        }
+
+        private async Task<bool> UserExists(string username)
+        {
+            var user = await _uow.UserRepository.GetUser(username);
+
+            if (user != null)
+                return true;
+
+            return false;
         }
 
         private void Register(string username, string password)
@@ -139,7 +148,7 @@ namespace webapi.Controllers
 
             var tokenDescriptor = new SecurityTokenDescriptor {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(1),
+                Expires = DateTime.UtcNow.AddHours(2),
                 SigningCredentials = signingCredentials
             };
 

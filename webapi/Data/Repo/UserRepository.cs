@@ -1,4 +1,3 @@
-using System.Reflection;
 using Dapper;
 using Npgsql;
 using webapi.Interfaces;
@@ -48,36 +47,6 @@ namespace webapi.Data.Repo
 
             await _dbConnection.ExecuteAsync(query, user);
         }
-
-        public async Task<bool> UserAlreadyExists(string username)
-        {
-
-            string query = @"
-                select count(*) as count from users where username = @username
-                ";
-
-            await _dbConnection.OpenAsync();
-            await using var command = new NpgsqlCommand(query, _dbConnection);
-
-            command.Parameters.AddWithValue("username", username);
-
-            await using var reader = await command.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
-            {
-                // TODO: add another if for checking if the count is > 1 and if so, a warning message gets logged
-                if (Convert.ToInt32(reader["count"]) > 0)
-                {
-                    await _dbConnection.CloseAsync();
-                    return true;
-                }
-            }
-
-            await _dbConnection.CloseAsync();
-            return false;
-
-        }
-
     }
 }
 

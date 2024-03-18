@@ -7,6 +7,5 @@ namespace webapi.Interfaces
         public Task<User?> GetUser(string username);
         public void addUser(User user);
         Task<List<User>> GetUsers();
-        Task<bool> UserAlreadyExists(string username);
     }
 }
