@@ -73,7 +73,7 @@ namespace webapi.Controllers
         [HttpGet("{recipeId}/data")]
         public async Task<IActionResult> GetRecipeById(int recipeId)
         {
-            var recipe = await _uow.RecipeRepository.GetRecipeById(recipeId);
+            var recipe = await _uow.RecipeRepository.GetRecipeByIdV2(recipeId);
 
             if (recipe == null)
             {

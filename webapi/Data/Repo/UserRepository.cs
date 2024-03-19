@@ -1,4 +1,7 @@
+using System.Reflection;
 using Dapper;
+using Dapper.FluentMap;
+using Dapper.FluentMap.Mapping;
 using Npgsql;
 using webapi.Interfaces;
 using webapi.Models.Basic;
@@ -30,9 +33,21 @@ namespace webapi.Data.Repo
             return user;
         }
 
+        internal class UserMap : EntityMap<User>
+        {
+            internal UserMap()
+            {
+                Map(u => u.Username).ToColumn("testcol");
+            }
+        }
+
         public async Task<List<User>> GetUsers()
         {
-            const string query = "select * from users";
+            FluentMapper.Initialize(config => {
+                    config.AddMap(new UserMap());
+                    });
+
+            const string query = "select id as Id, firstname as Firstname, lastname, username as testcol, email, signup_date, password_hashed, password_key from users";
             var userList = await _dbConnection.QueryAsync<User>(query);
             return userList.ToList();
         }

@@ -1,3 +1,4 @@
+using Dapper;
 using Npgsql;
 using webapi.Interfaces;
 using webapi.Models.Basic;
@@ -24,85 +25,167 @@ namespace webapi.Data.Repo
             return value == System.DBNull.Value ? null : Convert.ToInt32(value);
         }
 
-        public async Task<List<DetailRecipe>> GetRecipesWithTagsAndRatings()
+        public async Task<List<Recipe>> GetRecipesWithTagsAndRatings()
         {
-            string query = @"
-                    SELECT
+            // string query = @"
+            //         SELECT
+            //         re.id as recipe_id,
+            //         re.name as recipe_name,
+            //         re.description as recipe_description,
+            //         re.preptime as preptime,
+            //         re.cooktime as cooktime,
+            //         re.worktime as worktime,
+            //         re.difficulty as difficulty,
+            //         ta.id as tag_id,
+            //         ta.name as tag_name,
+            //         ra.user_id as rating_user_id,
+            //         ra.rating as rating_value,
+            //         ra.id as rating_id,
+            //         AVG(ra.rating) OVER (PARTITION BY re.id) as average_rating
+            //         FROM
+            //         recipes re
+            //         LEFT JOIN
+            //         ratings ra ON ra.recipe = re.id
+            //         LEFT JOIN
+            //         recipe_tags rta ON rta.recipe = re.id
+            //         LEFT JOIN
+            //         tags ta ON ta.id = rta.tag
+            //     ";
+            //
+            // var recipes = new Dictionary<int, DetailRecipe>();
+            //
+            // await _dbConnection.OpenAsync();
+            // await using var command = new NpgsqlCommand(query, _dbConnection);
+            // await using var reader = await command.ExecuteReaderAsync();
+            //
+            // while (await reader.ReadAsync())
+            // {
+            //     var recipeId = reader["recipe_id"] == System.DBNull.Value ? -1 : Convert.ToInt32(reader["recipe_id"]);
+            //     if (!recipes.TryGetValue(recipeId, out var recipe))
+            //     {
+            //         recipe = new DetailRecipe
+            //         {
+            //             Id = recipeId,
+            //             Description = reader["recipe_description"].ToString(),
+            //             Name = reader["recipe_name"].ToString(),
+            //             AvgRating = reader["average_rating"] == System.DBNull.Value ? null : Convert.ToSingle(reader["average_rating"]),
+            //             Preptime = nullOrInt(reader["preptime"]),
+            //             Cooktime = nullOrInt(reader["cooktime"]),
+            //             Worktime = nullOrInt(reader["worktime"]),
+            //             Difficulty = nullOrInt(reader["difficulty"]),
+            //             Tags = new List<Tag>(),
+            //             Ratings = new List<Rating>()
+            //         };
+            //         recipes.Add(recipeId, recipe);
+            //     }
+            //
+            //     var tagId = reader["tag_id"] == System.DBNull.Value ? -1 : Convert.ToInt32(reader["tag_id"]);
+            //     if (tagId > 0 && !recipe.Tags.Any(t => t.Id == tagId))
+            //     {
+            //         recipe.Tags.Add(new Tag
+            //                 {
+            //                 Id = tagId,
+            //                 Name = reader["tag_name"].ToString(),
+            //                 });
+            //     }
+            //
+            //     var ratingId = reader["rating_id"] == System.DBNull.Value ? -1 : Convert.ToInt32(reader["rating_id"]);
+            //     if (ratingId > 0 && !recipe.Ratings.Any(r => r.Id == ratingId))
+            //     {
+            //         recipe.Ratings.Add(new Rating
+            //                 {
+            //                 Id = reader["rating_id"] == System.DBNull.Value ? -1 : Convert.ToInt32(reader["rating_id"]),
+            //                 User = reader["rating_user_id"] == System.DBNull.Value ? -1 : Convert.ToInt32(reader["rating_user_id"]),
+            //                 Value = Convert.ToInt32(reader["rating_value"]),
+            //                 });
+            //     }
+            // }
+            //
+            // await _dbConnection.CloseAsync();
+            //
+            // return recipes.Values.ToList();
+
+            const string query = @"
+                select
                     re.id as recipe_id,
                     re.name as recipe_name,
-                    re.description as recipe_description,
+                    re.description as description,
                     re.preptime as preptime,
-                    re.cooktime as cooktime,
-                    re.worktime as worktime,
-                    re.difficulty as difficulty,
                     ta.id as tag_id,
-                    ta.name as tag_name,
-                    ra.user_id as rating_user_id,
-                    ra.rating as rating_value,
-                    ra.id as rating_id,
-                    AVG(ra.rating) OVER (PARTITION BY re.id) as average_rating
-                    FROM
-                    recipes re
-                    LEFT JOIN
-                    ratings ra ON ra.recipe = re.id
-                    LEFT JOIN
-                    recipe_tags rta ON rta.recipe = re.id
-                    LEFT JOIN
-                    tags ta ON ta.id = rta.tag
+                    ta.name as tag_name
+                from recipes re
+                left join recipe_tags rta on rta.recipe = re.id
+                left join tags ta on ta.id = rta.tag
                 ";
 
-            var recipes = new Dictionary<int, DetailRecipe>();
+//             var recipes = await _dbConnection.QueryAsync<Recipe, Tag, Recipe>(
+//                     query,
+//                     (recipe, tag) => {
+//                     if (recipe.Tags == null)
+//                     recipe.Tags = new List<Tag>(); // Ensure Tags list is initialized
+//                     tag.Id = tag.Tag_Id; // Assuming tag_id column is aliased as Tag_Id in your query
+//                     recipe.Tags.Add(tag);
+//                     return recipe;
+//                     },
+// splitOn: "tag_id"
+// );
 
-            await _dbConnection.OpenAsync();
-            await using var command = new NpgsqlCommand(query, _dbConnection);
-            await using var reader = await command.ExecuteReaderAsync();
+            var recipes = await _dbConnection.QueryAsync<Recipe, Tag, Recipe>(query, (recipe, tag) => {
+                    recipe.Tags.Add(tag);
+                    return recipe;
+                    }, splitOn: "tag_id");
 
-            while (await reader.ReadAsync())
-            {
-                var recipeId = reader["recipe_id"] == System.DBNull.Value ? -1 : Convert.ToInt32(reader["recipe_id"]);
-                if (!recipes.TryGetValue(recipeId, out var recipe))
-                {
-                    recipe = new DetailRecipe
+            var result = recipes.GroupBy(r => r.Id).Select(g =>
                     {
-                        Id = recipeId,
-                        Description = reader["recipe_description"].ToString(),
-                        Name = reader["recipe_name"].ToString(),
-                        AvgRating = reader["average_rating"] == System.DBNull.Value ? null : Convert.ToSingle(reader["average_rating"]),
-                        Preptime = nullOrInt(reader["preptime"]),
-                        Cooktime = nullOrInt(reader["cooktime"]),
-                        Worktime = nullOrInt(reader["worktime"]),
-                        Difficulty = nullOrInt(reader["difficulty"]),
-                        Tags = new List<Tag>(),
-                        Ratings = new List<Rating>()
-                    };
-                    recipes.Add(recipeId, recipe);
-                }
+                    var groupedRecipe = g.First();
+                    groupedRecipe.Tags = g.Select(r => r.Tags.Single()).ToList();
+                    return groupedRecipe;
+                    });
 
-                var tagId = reader["tag_id"] == System.DBNull.Value ? -1 : Convert.ToInt32(reader["tag_id"]);
-                if (tagId > 0 && !recipe.Tags.Any(t => t.Id == tagId))
-                {
-                    recipe.Tags.Add(new Tag
-                            {
-                            Id = tagId,
-                            Name = reader["tag_name"].ToString(),
-                            });
-                }
+            // foreach(var post in result)
+            // {
+            //     Console.Write($"{post.Name}: ");
+            //
+            //     foreach(var tag in post.Tags)
+            //     {
+            //         Console.Write($" {tag.Name} ");
+            //     }
+            //
+            //     Console.Write(Environment.NewLine);
+            // }
 
-                var ratingId = reader["rating_id"] == System.DBNull.Value ? -1 : Convert.ToInt32(reader["rating_id"]);
-                if (ratingId > 0 && !recipe.Ratings.Any(r => r.Id == ratingId))
-                {
-                    recipe.Ratings.Add(new Rating
-                            {
-                            Id = reader["rating_id"] == System.DBNull.Value ? -1 : Convert.ToInt32(reader["rating_id"]),
-                            User = reader["rating_user_id"] == System.DBNull.Value ? -1 : Convert.ToInt32(reader["rating_user_id"]),
-                            Value = Convert.ToInt32(reader["rating_value"]),
-                            });
-                }
-            }
 
-            await _dbConnection.CloseAsync();
+            return result.ToList();
+        }
 
-            return recipes.Values.ToList();
+        public async Task<Recipe> GetRecipeByIdV2(int recipeId)
+        {
+            const string query = @"
+                select
+                    re.id as recipe_id,
+                    re.name as recipe_name,
+                    re.description as description,
+                    re.preptime as preptime,
+                    ta.id as tag_id,
+                    ta.name as tag_name
+                from recipes re
+                left join recipe_tags rta on rta.recipe = re.id
+                left join tags ta on ta.id = rta.tag
+                ";
+
+            var recipes = await _dbConnection.QueryAsync<Recipe, Tag, Recipe>(query, (recipe, tag) => {
+                    recipe.Tags.Add(tag);
+                    return recipe;
+                    }, splitOn: "tag_id");
+
+            var result = recipes.GroupBy(r => r.Id).Select(g =>
+                    {
+                    var groupedRecipe = g.First();
+                    groupedRecipe.Tags = g.Select(r => r.Tags.Single()).ToList();
+                    return groupedRecipe;
+                    });
+
+            return result.First();
         }
 
         public async Task<Recipe> GetRecipeById(int recipeId)
