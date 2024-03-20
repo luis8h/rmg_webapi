@@ -138,6 +138,7 @@ namespace webapi.Data.Repo
                     ra.user_id as user_id,
                     ra.rating as rating,
                     ra.id as rating_id
+                    AVG(ra.rating) OVER (PARTITION BY re.id) as average_rating
                 from recipes re
                 left join recipe_tags rta on rta.recipe = re.id
                 left join tags ta on ta.id = rta.tag
@@ -158,19 +159,17 @@ namespace webapi.Data.Repo
                 var tags = g.SelectMany(r => r.Tags).Distinct();
                 var tagResult = tags?.GroupBy(t => t?.Id).Select(gt =>
                 {
-                    var groupedTag = gt.First();
-                    return groupedTag;
+                    return gt.First();
                 });
 
                 var ratings = g.SelectMany(r => r.Ratings).Distinct();
                 var ratingResult = ratings?.GroupBy(ra => ra?.Id).Select(gr =>
                 {
-                    var groupedRating = gr.First();
-                    return groupedRating;
+                    return gr.First();
                 });
 
-                groupedRecipe.Tags = tagResult?.ToList();
-                groupedRecipe.Ratings = ratingResult?.ToList();
+                groupedRecipe.Tags = tagResult?.ToList() ?? new List<Tag>();
+                groupedRecipe.Ratings = ratingResult?.ToList() ?? new List<Rating>();
 
                 return groupedRecipe;
             });
