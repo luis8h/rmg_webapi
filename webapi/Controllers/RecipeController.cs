@@ -23,9 +23,16 @@ namespace webapi.Controllers
         // }
 
         [HttpGet("list")]
-        public async Task<ActionResult<IEnumerable<DetailRecipe>>> GetRecipes2()
+        public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipes()
         {
-            var recipe = await _uow.RecipeRepository.GetRecipesWithTagsAndRatings();
+            var recipe = await _uow.RecipeRepository.GetRecipes();
+            return Ok(recipe);
+        }
+
+        [HttpGet("detail-list")]
+        public async Task<ActionResult<IEnumerable<DetailRecipe>>> GetRecipesDetail()
+        {
+            var recipe = await _uow.RecipeRepository.GetRecipesDetail();
             return Ok(recipe);
         }
 

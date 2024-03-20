@@ -43,9 +43,8 @@ namespace webapi.Data.Repo
                     ta.name as tag_name,
                     ra.user_id as user_id,
                     ra.rating as rating,
-                    ra.id as rating_id,
-                    --AVG(ra.rating) OVER (PARTITION BY re.id) as avg_rating
-                    3 as avgRating
+                    ra.id as rating_id
+                    AVG(ra.rating) OVER (PARTITION BY re.id) as avg_rating
                 from recipes re
                 left join recipe_tags rta on rta.recipe = re.id
                 left join tags ta on ta.id = rta.tag

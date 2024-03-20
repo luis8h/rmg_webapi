@@ -9,6 +9,7 @@ namespace webapi.Dapper.Mappings
         {
             Map(r => r.Id).ToColumn("rating_id");
             Map(r => r.User).ToColumn("user_id");
+            Map(r => r.Value).ToColumn("rating");
         }
     }
 }

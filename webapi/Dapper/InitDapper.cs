@@ -7,17 +7,29 @@ namespace webapi.Dapper
     {
         public static void Init()
         {
-            FluentMapper.Initialize(config => {
+            FluentMapper.Initialize(config =>
+                    {
                     config.AddMap(new RecipeMap());
-                    });
-
-            FluentMapper.Initialize(config => {
+                    config.AddMap(new DetailRecipeMap());
                     config.AddMap(new TagMap());
-                    });
-
-            FluentMapper.Initialize(config => {
                     config.AddMap(new RatingMap());
                     });
+
+            // FluentMapper.Initialize(config => {
+            //         config.AddMap(new RecipeMap());
+            //         });
+            //
+            // FluentMapper.Initialize(config => {
+            //         config.AddMap(new DetailRecipeMap());
+            //         });
+            //
+            // FluentMapper.Initialize(config => {
+            //         config.AddMap(new TagMap());
+            //         });
+            //
+            // FluentMapper.Initialize(config => {
+            //         config.AddMap(new RatingMap());
+            //         });
         }
     }
 }
