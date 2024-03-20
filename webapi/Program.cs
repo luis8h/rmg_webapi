@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
+using webapi.Dapper;
 using webapi.Data;
 using webapi.Extensions;
 using webapi.Interfaces;
@@ -18,6 +19,9 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // user cors for access control (allow all access)
 builder.Services.AddCors();
+
+// init dapper mappings
+InitDapper.Init();
 
 // authentication
 var secretKey = builder.Configuration.GetSection("AppSettings:Key").Value;

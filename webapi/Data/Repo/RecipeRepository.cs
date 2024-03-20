@@ -1,4 +1,7 @@
 using Dapper;
+using Dapper.FluentMap;
+using Dapper.FluentMap.Mapping;
+using Microsoft.VisualBasic;
 using Npgsql;
 using webapi.Interfaces;
 using webapi.Models.Basic;
@@ -104,6 +107,22 @@ namespace webapi.Data.Repo
             // await _dbConnection.CloseAsync();
             //
             // return recipes.Values.ToList();
+            //
+            //
+            //
+            //         re.id as recipe_id,
+            //         re.name as recipe_name,
+            //         re.description as recipe_description,
+            //         re.preptime as preptime,
+            //         re.cooktime as cooktime,
+            //         re.worktime as worktime,
+            //         re.difficulty as difficulty,
+            //         ta.id as tag_id,
+            //         ta.name as tag_name,
+            //         ra.user_id as rating_user_id,
+            //         ra.rating as rating_value,
+            //         ra.id as rating_id,
+            //         AVG(ra.rating) OVER (PARTITION BY re.id) as average_rating
 
             const string query = @"
                 select
@@ -111,49 +130,50 @@ namespace webapi.Data.Repo
                     re.name as recipe_name,
                     re.description as description,
                     re.preptime as preptime,
+                    re.cooktime as cooktime,
+                    re.worktime as worktime,
+                    re.difficulty as difficulty,
                     ta.id as tag_id,
-                    ta.name as tag_name
+                    ta.name as tag_name,
+                    ra.user_id as user_id,
+                    ra.rating as rating,
+                    ra.id as rating_id
                 from recipes re
                 left join recipe_tags rta on rta.recipe = re.id
                 left join tags ta on ta.id = rta.tag
+                left join ratings ra on ra.recipe = re.id
                 ";
 
-//             var recipes = await _dbConnection.QueryAsync<Recipe, Tag, Recipe>(
-//                     query,
-//                     (recipe, tag) => {
-//                     if (recipe.Tags == null)
-//                     recipe.Tags = new List<Tag>(); // Ensure Tags list is initialized
-//                     tag.Id = tag.Tag_Id; // Assuming tag_id column is aliased as Tag_Id in your query
-//                     recipe.Tags.Add(tag);
-//                     return recipe;
-//                     },
-// splitOn: "tag_id"
-// );
+            var recipes = await _dbConnection.QueryAsync<Recipe, Tag, Rating, Recipe>(query, (recipe, tag, rating) => {
+                        recipe.Ratings.Add(rating);
+                        recipe.Tags.Add(tag);
+                        return recipe;
+                    }, splitOn: "tag_id,user_id");
 
-            var recipes = await _dbConnection.QueryAsync<Recipe, Tag, Recipe>(query, (recipe, tag) => {
-                    recipe.Tags.Add(tag);
-                    return recipe;
-                    }, splitOn: "tag_id");
 
             var result = recipes.GroupBy(r => r.Id).Select(g =>
-                    {
-                    var groupedRecipe = g.First();
-                    groupedRecipe.Tags = g.Select(r => r.Tags.Single()).ToList();
-                    return groupedRecipe;
-                    });
+            {
+                var groupedRecipe = g.First();
 
-            // foreach(var post in result)
-            // {
-            //     Console.Write($"{post.Name}: ");
-            //
-            //     foreach(var tag in post.Tags)
-            //     {
-            //         Console.Write($" {tag.Name} ");
-            //     }
-            //
-            //     Console.Write(Environment.NewLine);
-            // }
+                var tags = g.SelectMany(r => r.Tags).Distinct();
+                var tagResult = tags?.GroupBy(t => t?.Id).Select(gt =>
+                {
+                    var groupedTag = gt.First();
+                    return groupedTag;
+                });
 
+                var ratings = g.SelectMany(r => r.Ratings).Distinct();
+                var ratingResult = ratings?.GroupBy(ra => ra?.Id).Select(gr =>
+                {
+                    var groupedRating = gr.First();
+                    return groupedRating;
+                });
+
+                groupedRecipe.Tags = tagResult?.ToList();
+                groupedRecipe.Ratings = ratingResult?.ToList();
+
+                return groupedRecipe;
+            });
 
             return result.ToList();
         }
