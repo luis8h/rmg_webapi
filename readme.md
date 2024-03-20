@@ -15,6 +15,13 @@
 -   rollback to a db version: ```liquibase rollback --tag='v0.0.1' --labelFilter='!tagset:v0.0.1'```
     (the reason for the labelfilter is that otherwise the specified changeset of the tag would also get reverted)
 
+## start developing on new machine
+-   `git clone https://github.com/luis8h/rmg_webapi.git`
+-   `cd rmg_webapi`
+-   `git fetch`
+-   `git switch <feature_branch_name>` (checkout to remote branch)
+-   `cp template.env .env` (and type in db password in .evn file)
+
 
 ## production environment
 
