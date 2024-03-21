@@ -54,6 +54,7 @@ namespace webapi.Data.Repo
 
             var recipes = await _dbConnection.QueryAsync<DetailRecipe, Tag, Rating, DetailRecipe>(query, (recipe, tag, rating) => {
                         recipe.Ratings.Add(rating);
+                        Console.WriteLine(recipe.AvgRating);
                         recipe.Tags.Add(tag);
                         return recipe;
                     }, splitOn: "tag_id,user_id");
