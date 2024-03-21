@@ -268,51 +268,50 @@ namespace webapi.Data.Repo
 
         public async Task<int> AddRecipe(Recipe recipe)
         {
-            await _dbConnection.OpenAsync();
+            const string query = @"
+                INSERT INTO recipes
+                (name, description, preptime, cooktime, worktime, difficulty, created_by)
+                VALUES (@name, @description, @preptime, @cooktime, @worktime, @difficulty, @created_by)
+                returning id
+            ";
 
-            await using var transaction = await _dbConnection.BeginTransactionAsync();
+            var newId = await _dbConnection.QuerySingleAsync<int>(query, recipe);
 
-            try
-            {
-                // inserting into recipes
-                string query = @"
-                    INSERT INTO recipes
-                    (name, description, preptime, cooktime, worktime, difficulty, created_by)
-                    VALUES (@name, @description, @preptime, @cooktime, @worktime, @difficulty, @created_by)
-                    returning id
-                ";
+            Console.WriteLine("inserted recipe with id: " + newId);
 
-                await using var command = new NpgsqlCommand(query, _dbConnection);
-                command.Transaction = transaction;
+            return newId;
 
-                command.Parameters.AddWithValue("name", CheckNull(recipe.Name));
-                command.Parameters.AddWithValue("description", CheckNull(recipe.Description));
-                command.Parameters.AddWithValue("preptime", CheckNull(recipe.Preptime));
-                command.Parameters.AddWithValue("cooktime", CheckNull(recipe.Cooktime));
-                command.Parameters.AddWithValue("worktime", CheckNull(recipe.Worktime));
-                command.Parameters.AddWithValue("difficulty", CheckNull(recipe.Difficulty));
-                command.Parameters.AddWithValue("created_by", 3);
-
-                int recipeId = (await command.ExecuteScalarAsync() as int?) ?? -1;
-                if (recipeId == -1) return -1;
-
-                // inserting into recipe_tags
-                await _tagRepository.AddTagsByRecipeIdNoConn(recipe.Tags, recipeId, transaction);
-
-                // inserting into ratings
-                await _ratingRepository.AddRatingsByRecipeIdNoConn(recipe.Ratings, recipeId, transaction);
-
-                await transaction.CommitAsync();
-                await _dbConnection.CloseAsync();
-                return recipeId;
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync();
-                await _dbConnection.CloseAsync();
-                Console.WriteLine(ex);
-                return 1;
-            }
+            //     await using var command = new NpgsqlCommand(query, _dbConnection);
+            //     command.Transaction = transaction;
+            //
+            //     command.Parameters.AddWithValue("name", CheckNull(recipe.Name));
+            //     command.Parameters.AddWithValue("description", CheckNull(recipe.Description));
+            //     command.Parameters.AddWithValue("preptime", CheckNull(recipe.Preptime));
+            //     command.Parameters.AddWithValue("cooktime", CheckNull(recipe.Cooktime));
+            //     command.Parameters.AddWithValue("worktime", CheckNull(recipe.Worktime));
+            //     command.Parameters.AddWithValue("difficulty", CheckNull(recipe.Difficulty));
+            //     command.Parameters.AddWithValue("created_by", 3);
+            //
+            //     int recipeId = (await command.ExecuteScalarAsync() as int?) ?? -1;
+            //     if (recipeId == -1) return -1;
+            //
+            //     // inserting into recipe_tags
+            //     await _tagRepository.AddTagsByRecipeIdNoConn(recipe.Tags, recipeId, transaction);
+            //
+            //     // inserting into ratings
+            //     await _ratingRepository.AddRatingsByRecipeIdNoConn(recipe.Ratings, recipeId, transaction);
+            //
+            //     await transaction.CommitAsync();
+            //     await _dbConnection.CloseAsync();
+            //     return recipeId;
+            // }
+            // catch (Exception ex)
+            // {
+            //     await transaction.RollbackAsync();
+            //     await _dbConnection.CloseAsync();
+            //     Console.WriteLine(ex);
+            //     return 1;
+            // }
 
         }
     }
