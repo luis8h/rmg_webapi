@@ -39,13 +39,12 @@ namespace webapi.Data.Repo
                     re.cooktime as cooktime,
                     re.worktime as worktime,
                     re.difficulty as difficulty,
+                    AVG(ra.rating) OVER (PARTITION BY re.id) as avg_rating,
                     ta.id as tag_id,
                     ta.name as tag_name,
                     ra.user_id as user_id,
                     ra.rating as rating,
-                    ra.id as rating_id,
-                    --AVG(ra.rating) OVER (PARTITION BY re.id) as avg_rating
-                    3 as avgRating
+                    ra.id as rating_id
                 from recipes re
                 left join recipe_tags rta on rta.recipe = re.id
                 left join tags ta on ta.id = rta.tag
@@ -54,7 +53,6 @@ namespace webapi.Data.Repo
 
             var recipes = await _dbConnection.QueryAsync<DetailRecipe, Tag, Rating, DetailRecipe>(query, (recipe, tag, rating) => {
                         recipe.Ratings.Add(rating);
-                        Console.WriteLine(recipe.AvgRating);
                         recipe.Tags.Add(tag);
                         return recipe;
                     }, splitOn: "tag_id,user_id");
