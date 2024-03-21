@@ -41,51 +41,6 @@ namespace webapi.Data.Repo
             return list;
         }
 
-        public async Task<int> DeleteRatingsByRecipeIdNoConn(int? recipeId, NpgsqlTransaction transaction)
-        {
-            string query = @"
-                delete from ratings
-                where recipe = @recipe
-                ";
-
-            await using var command = new NpgsqlCommand(query, _dbConnection);
-            command.Transaction = transaction;
-
-            NpgsqlParameter recipeIdParam = command.Parameters.AddWithValue("recipe", recipeId!);
-
-            await command.ExecuteScalarAsync();
-
-            return 0;
-        }
-
-
-        public async Task<int> AddRatingsByRecipeIdNoConn(List<Rating> ratings, int? recipeId, NpgsqlTransaction transaction)
-        {
-            string query = @"
-                INSERT INTO ratings
-                (recipe, user_id, rating)
-                VALUES (@recipe, @user_id, @rating)
-                ";
-
-            await using var command = new NpgsqlCommand(query, _dbConnection);
-
-            command.CommandText = query;
-            command.Transaction = transaction;
-
-            NpgsqlParameter ratingRecipeParam = command.Parameters.AddWithValue("recipe", recipeId!);
-            NpgsqlParameter ratingUserParam = command.Parameters.AddWithValue("user_id", 0);
-            NpgsqlParameter ratingValueParam = command.Parameters.AddWithValue("rating", 0);
-
-            foreach (Rating rating in ratings)
-            {
-                ratingValueParam.Value = rating.Value;
-                ratingUserParam.Value = rating.User;
-                await command.ExecuteNonQueryAsync();
-            }
-
-            return 0;
-        }
-
         public async Task<int> AddRatingsByRecipeId(List<Rating> ratings, int recipeId)
         {
             const string query = @"
@@ -93,9 +48,15 @@ namespace webapi.Data.Repo
                 (recipe, user_id, rating)
                 VALUES (@recipeId, @userId, @ratingValue)
                 ";
-
             var parameters = ratings.Select(rating => new { recipeId, userId = rating.User, ratingValue = rating.Value });
             await _dbConnection.ExecuteAsync(query, parameters);
+            return 0;
+        }
+
+        public async Task<int> DeleteRatingsByRecipeId(int recipeId)
+        {
+            const string query = @"delete from ratings where recipe = @recipeId";
+            await _dbConnection.ExecuteAsync(query, new { recipeId });
             return 0;
         }
     }

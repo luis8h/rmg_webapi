@@ -24,11 +24,6 @@ namespace webapi.Data.Repo
             _ratingRepository = ratingRepository;
         }
 
-        private int? nullOrInt(Object value)
-        {
-            return value == System.DBNull.Value ? null : Convert.ToInt32(value);
-        }
-
         public async Task<List<DetailRecipe>> GetRecipesDetail()
         {
             const string query = @"
@@ -196,74 +191,42 @@ namespace webapi.Data.Repo
             return recipe;
         }
 
-        private object CheckNull(int? value)
-        {
-            return value.HasValue ? (object)value.Value : DBNull.Value;
-        }
-
-        private object CheckNull(string? value)
-        {
-            return value ?? (object)DBNull.Value;
-        }
-
         public async Task<int> PutRecipe(Recipe recipe)
         {
-            await _dbConnection.OpenAsync();
+            if (recipe.Id == null)
+                throw new KeyNotFoundException(); // TODO: replace with custom exception
 
-            await using var transaction = await _dbConnection.BeginTransactionAsync();
+            int recipeId = recipe.Id ?? default(int);
 
-            try
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                await UpdateRecipe(recipe, transaction);
+                await UpdateRecipe(recipe);
 
-                await _tagRepository.DeleteTagsByRecipeIdNoConn(recipe.Id, transaction);
-                await _tagRepository.AddTagsByRecipeIdNoConn(recipe.Tags, recipe.Id, transaction);
+                await _tagRepository.DeleteTagsByRecipeId(recipeId);
+                await _tagRepository.AddTagsByRecipeId(recipe.Tags, recipeId);
 
-                await _ratingRepository.DeleteRatingsByRecipeIdNoConn(recipe.Id, transaction);
-                await _ratingRepository.AddRatingsByRecipeIdNoConn(recipe.Ratings, recipe.Id, transaction);
+                await _ratingRepository.DeleteRatingsByRecipeId(recipeId);
+                await _ratingRepository.AddRatingsByRecipeId(recipe.Ratings, recipeId);
 
-                await transaction.CommitAsync();
-                await _dbConnection.CloseAsync();
-                return recipe.Id ?? -1;
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync();
-                await _dbConnection.CloseAsync();
-                Console.WriteLine(ex);
-                return -1;
+                scope.Complete();
             }
 
+            return 0;
         }
 
-        public async Task<int> UpdateRecipe(Recipe recipe, NpgsqlTransaction transaction)
+        public async Task<int> UpdateRecipe(Recipe recipe)
         {
-                string query = @"
-                    UPDATE recipes
-                    SET name = @name,
-                        description = @description,
-                        preptime = @preptime,
-                        cooktime = @cooktime,
-                        worktime = @worktime,
-                        difficulty = @difficulty,
-                        created_by = @created_by
-                    WHERE id = @recipe_id
+            string query = @"
+                update recipes
+                set name = @name,
+                    description = @description,
+                    preptime = @preptime,
+                    cooktime = @cooktime,
+                    worktime = @worktime,
+                    difficulty = @difficulty
+                where id = @Id
                 ";
-
-                await using var command = new NpgsqlCommand(query, _dbConnection);
-                command.Transaction = transaction;
-
-                command.Parameters.AddWithValue("recipe_id", CheckNull(recipe.Id));
-                command.Parameters.AddWithValue("name", CheckNull(recipe.Name));
-                command.Parameters.AddWithValue("description", CheckNull(recipe.Description));
-                command.Parameters.AddWithValue("preptime", CheckNull(recipe.Preptime));
-                command.Parameters.AddWithValue("cooktime", CheckNull(recipe.Cooktime));
-                command.Parameters.AddWithValue("worktime", CheckNull(recipe.Worktime));
-                command.Parameters.AddWithValue("difficulty", CheckNull(recipe.Difficulty));
-                command.Parameters.AddWithValue("created_by", 1);
-
-                await command.ExecuteScalarAsync();
-
+                await _dbConnection.QueryAsync(query, recipe);
                 return 0;
         }
 
