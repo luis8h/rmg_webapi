@@ -1,3 +1,4 @@
+using System.Transactions;
 using Dapper;
 using Dapper.FluentMap;
 using Dapper.FluentMap.Mapping;
@@ -271,47 +272,21 @@ namespace webapi.Data.Repo
             const string query = @"
                 INSERT INTO recipes
                 (name, description, preptime, cooktime, worktime, difficulty, created_by)
-                VALUES (@name, @description, @preptime, @cooktime, @worktime, @difficulty, @created_by)
+                VALUES (@name, @description, @preptime, @cooktime, @worktime, @difficulty, @createdBy)
                 returning id
             ";
 
-            var newId = await _dbConnection.QuerySingleAsync<int>(query, recipe);
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                var newId = await _dbConnection.QuerySingleAsync<int>(query, recipe);
 
-            Console.WriteLine("inserted recipe with id: " + newId);
+                await _tagRepository.AddTagsByRecipeId(recipe.Tags, newId);
+                await _ratingRepository.AddRatingsByRecipeId(recipe.Ratings, newId);
 
-            return newId;
+                scope.Complete();
 
-            //     await using var command = new NpgsqlCommand(query, _dbConnection);
-            //     command.Transaction = transaction;
-            //
-            //     command.Parameters.AddWithValue("name", CheckNull(recipe.Name));
-            //     command.Parameters.AddWithValue("description", CheckNull(recipe.Description));
-            //     command.Parameters.AddWithValue("preptime", CheckNull(recipe.Preptime));
-            //     command.Parameters.AddWithValue("cooktime", CheckNull(recipe.Cooktime));
-            //     command.Parameters.AddWithValue("worktime", CheckNull(recipe.Worktime));
-            //     command.Parameters.AddWithValue("difficulty", CheckNull(recipe.Difficulty));
-            //     command.Parameters.AddWithValue("created_by", 3);
-            //
-            //     int recipeId = (await command.ExecuteScalarAsync() as int?) ?? -1;
-            //     if (recipeId == -1) return -1;
-            //
-            //     // inserting into recipe_tags
-            //     await _tagRepository.AddTagsByRecipeIdNoConn(recipe.Tags, recipeId, transaction);
-            //
-            //     // inserting into ratings
-            //     await _ratingRepository.AddRatingsByRecipeIdNoConn(recipe.Ratings, recipeId, transaction);
-            //
-            //     await transaction.CommitAsync();
-            //     await _dbConnection.CloseAsync();
-            //     return recipeId;
-            // }
-            // catch (Exception ex)
-            // {
-            //     await transaction.RollbackAsync();
-            //     await _dbConnection.CloseAsync();
-            //     Console.WriteLine(ex);
-            //     return 1;
-            // }
+                return newId;
+            }
 
         }
     }

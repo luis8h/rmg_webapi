@@ -89,5 +89,17 @@ namespace webapi.Data.Repo
             return 0;
         }
 
+        public async Task<int> AddTagsByRecipeId(List<Tag> tags, int recipeId)
+        {
+            const string query = @"
+                INSERT INTO recipe_tags
+                (tag, recipe)
+                VALUES (@tagId, @recipeId)
+                ";
+
+            var parameters = tags.Select(tag => new { tagId = tag.Id, recipeId });
+            await _dbConnection.ExecuteAsync(query, parameters);
+            return 0;
+        }
     }
 }

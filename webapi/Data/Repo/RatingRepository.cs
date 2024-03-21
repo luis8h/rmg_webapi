@@ -1,3 +1,4 @@
+using Dapper;
 using Npgsql;
 using webapi.Interfaces;
 using webapi.Models.Basic;
@@ -85,5 +86,17 @@ namespace webapi.Data.Repo
             return 0;
         }
 
+        public async Task<int> AddRatingsByRecipeId(List<Rating> ratings, int recipeId)
+        {
+            const string query = @"
+                INSERT INTO ratings
+                (recipe, user_id, rating)
+                VALUES (@recipeId, @userId, @ratingValue)
+                ";
+
+            var parameters = ratings.Select(rating => new { recipeId, userId = rating.User, ratingValue = rating.Value });
+            await _dbConnection.ExecuteAsync(query, parameters);
+            return 0;
+        }
     }
 }

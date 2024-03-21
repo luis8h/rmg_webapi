@@ -8,6 +8,7 @@ namespace webapi.Interfaces
         Task<List<Tag>> GetTags();
         Task<int> DeleteTagsByRecipeIdNoConn(int? recipeId, NpgsqlTransaction transaction);
         Task<int> AddTagsByRecipeIdNoConn(List<Tag> tags, int? recipeId, NpgsqlTransaction transaction);
+        Task<int> AddTagsByRecipeId(List<Tag> tags, int recipeId);
         Task<List<Tag>> GetTagsByRecipeIdNoConn(int recipeId);
     }
 }
