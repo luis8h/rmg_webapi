@@ -47,64 +47,12 @@ namespace webapi.Data.Repo
                 left join ratings ra on ra.recipe = re.id
                 ";
 
-            var recipes = await _dbConnection.QueryAsync<DetailRecipe, Tag, Rating, DetailRecipe>(query, (recipe, tag, rating) => {
-                        recipe.Ratings.Add(rating);
-                        recipe.Tags.Add(tag);
-                        return recipe;
-                    }, splitOn: "tag_id,user_id");
-
-            var result = recipes.GroupBy(r => r.Id).Select(g =>
+            var recipes = await _dbConnection.QueryAsync<DetailRecipe, Tag, Rating, DetailRecipe>(query, (recipe, tag, rating) =>
             {
-                var groupedRecipe = g.First();
-
-                var tags = g.SelectMany(r => r.Tags).Distinct();
-                var tagResult = tags?.GroupBy(t => t?.Id).Select(gt =>
-                {
-                    return gt.First();
-                });
-
-                var ratings = g.SelectMany(r => r.Ratings).Distinct();
-                var ratingResult = ratings?.GroupBy(ra => ra?.Id).Select(gr =>
-                {
-                    return gr.First();
-                });
-
-                groupedRecipe.Tags = tagResult?.ToList() ?? new List<Tag>();
-                groupedRecipe.Ratings = ratingResult?.ToList() ?? new List<Rating>();
-
-                return groupedRecipe;
-            });
-
-            return result.ToList();
-        }
-
-        public async Task<List<Recipe>> GetRecipes()
-        {
-            const string query = @"
-                select
-                    re.id as recipe_id,
-                    re.name as recipe_name,
-                    re.description as description,
-                    re.preptime as preptime,
-                    re.cooktime as cooktime,
-                    re.worktime as worktime,
-                    re.difficulty as difficulty,
-                    ta.id as tag_id,
-                    ta.name as tag_name,
-                    ra.user_id as user_id,
-                    ra.rating as rating,
-                    ra.id as rating_id
-                from recipes re
-                left join recipe_tags rta on rta.recipe = re.id
-                left join tags ta on ta.id = rta.tag
-                left join ratings ra on ra.recipe = re.id
-                ";
-
-            var recipes = await _dbConnection.QueryAsync<Recipe, Tag, Rating, Recipe>(query, (recipe, tag, rating) => {
-                        recipe.Ratings.Add(rating);
-                        recipe.Tags.Add(tag);
-                        return recipe;
-                    }, splitOn: "tag_id,user_id");
+                recipe.Ratings.Add(rating);
+                recipe.Tags.Add(tag);
+                return recipe;
+            }, splitOn: "tag_id,user_id");
 
             var result = recipes.GroupBy(r => r.Id).Select(g =>
             {
@@ -133,60 +81,11 @@ namespace webapi.Data.Repo
 
         public async Task<DetailRecipe> GetRecipeById(int recipeId)
         {
-            const string query = @"
-                select
-                    re.id as recipe_id,
-                    re.name as recipe_name,
-                    re.description as description,
-                    re.preptime as preptime,
-                    re.cooktime as cooktime,
-                    re.worktime as worktime,
-                    re.difficulty as difficulty,
-                    AVG(ra.rating) OVER (PARTITION BY re.id) as avg_rating,
-                    ta.id as tag_id,
-                    ta.name as tag_name,
-                    ra.user_id as user_id,
-                    ra.rating as rating,
-                    ra.id as rating_id
-                from recipes re
-                left join recipe_tags rta on rta.recipe = re.id
-                left join tags ta on ta.id = rta.tag
-                left join ratings ra on ra.recipe = re.id
-                where re.id = @RecipeId
-                ";
+            var recipes = await GetRecipesDetail();
+            var recipe = recipes.FirstOrDefault(r => r.Id == recipeId);
 
-            var dbResult = await _dbConnection.QueryAsync<DetailRecipe, Tag, Rating, DetailRecipe>(
-                    query,
-                    (recipe, tag, rating) => {
-                        recipe.Ratings.Add(rating);
-                        recipe.Tags.Add(tag);
-                        return recipe;
-                    },
-                    new { RecipeId = recipeId },
-                    splitOn: "tag_id,user_id"
-                    );
-
-            var recipe = dbResult.GroupBy(r => r.Id).Select(g =>
-            {
-                var groupedRecipe = g.First();
-
-                var tags = g.SelectMany(r => r.Tags).Distinct();
-                var tagResult = tags?.GroupBy(t => t?.Id).Select(gt =>
-                {
-                    return gt.First();
-                });
-
-                var ratings = g.SelectMany(r => r.Ratings).Distinct();
-                var ratingResult = ratings?.GroupBy(ra => ra?.Id).Select(gr =>
-                {
-                    return gr.First();
-                });
-
-                groupedRecipe.Tags = tagResult?.ToList() ?? new List<Tag>();
-                groupedRecipe.Ratings = ratingResult?.ToList() ?? new List<Rating>();
-
-                return groupedRecipe;
-            }).First();
+            if (recipe == null)
+                throw new KeyNotFoundException();
 
             return recipe;
         }
@@ -226,8 +125,8 @@ namespace webapi.Data.Repo
                     difficulty = @difficulty
                 where id = @Id
                 ";
-                await _dbConnection.QueryAsync(query, recipe);
-                return 0;
+            await _dbConnection.QueryAsync(query, recipe);
+            return 0;
         }
 
         public async Task<int> AddRecipe(Recipe recipe)

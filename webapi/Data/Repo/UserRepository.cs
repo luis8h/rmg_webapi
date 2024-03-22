@@ -33,21 +33,9 @@ namespace webapi.Data.Repo
             return user;
         }
 
-        internal class UserMap : EntityMap<User>
-        {
-            internal UserMap()
-            {
-                Map(u => u.Username).ToColumn("testcol");
-            }
-        }
-
         public async Task<List<User>> GetUsers()
         {
-            FluentMapper.Initialize(config => {
-                    config.AddMap(new UserMap());
-                    });
-
-            const string query = "select id as Id, firstname as Firstname, lastname, username as testcol, email, signup_date, password_hashed, password_key from users";
+            const string query = "select id as Id, firstname as Firstname, lastname, username, email, signup_date, password_hashed, password_key from users";
             var userList = await _dbConnection.QueryAsync<User>(query);
             return userList.ToList();
         }

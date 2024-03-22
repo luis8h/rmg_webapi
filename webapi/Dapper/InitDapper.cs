@@ -13,6 +13,7 @@ namespace webapi.Dapper
                     config.AddMap(new DetailRecipeMap());
                     config.AddMap(new TagMap());
                     config.AddMap(new RatingMap());
+                    config.AddMap(new UserMap());
                     });
 
             // FluentMapper.Initialize(config => {

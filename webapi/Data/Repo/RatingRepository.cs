@@ -14,31 +14,11 @@ namespace webapi.Data.Repo
             _dbConnection = dbConnection;
         }
 
-        public async Task<List<Rating>> GetRatingsByRecipeIdNoConn(int recipeId)
+        public async Task<List<Rating>> GetRatings()
         {
-            List<Rating> list = new List<Rating>();
-            string query = @"
-                select ra.id, ra.rating, ra.user_id
-                from ratings ra
-                where ra.recipe = 60
-                ";
-
-            await using var command = new NpgsqlCommand(query, _dbConnection);
-            await using var reader = await command.ExecuteReaderAsync();
-
-            command.Parameters.AddWithValue("recipe_id", recipeId);
-
-            while (await reader.ReadAsync())
-            {
-                list.Add(new Rating ()
-                        {
-                        Id = Convert.ToInt32(reader["id"]),
-                        User = Convert.ToInt32(reader["user_id"]),
-                        Value = Convert.ToInt32(reader["rating"])
-                        });
-            }
-
-            return list;
+            const string query = @"select ra.id, ra.rating as value, ra.user_id from ratings ra";
+            var ratings = await _dbConnection.QueryAsync<Rating>(query);
+            return ratings.ToList();
         }
 
         public async Task<int> AddRatingsByRecipeId(List<Rating> ratings, int recipeId)

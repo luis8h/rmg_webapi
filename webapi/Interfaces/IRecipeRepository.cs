@@ -5,7 +5,6 @@ namespace webapi.Interfaces
 {
     public interface IRecipeRepository
     {
-        Task<List<Recipe>> GetRecipes();
         Task<List<DetailRecipe>> GetRecipesDetail();
         Task<int> AddRecipe(Recipe recipe);
         Task<int> PutRecipe(Recipe recipe);
