@@ -61,9 +61,7 @@ namespace webapi.Controllers
             User user = await Authenticate(loginuser!.Username!, loginuser!.Password!);
 
             if (user == null)
-            {
                 return Unauthorized();
-            }
 
             var loginRes = new LoginResDto();
             loginRes.Username = user.Username;
