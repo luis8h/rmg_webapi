@@ -36,6 +36,7 @@ namespace webapi.Controllers
         }
 
         [HttpPost("register")]
+        [AllowAnonymous]
         public async Task<IActionResult> Register(LoginReqDto loginReq)
         {
             if (await UserExists(loginReq.Username))
