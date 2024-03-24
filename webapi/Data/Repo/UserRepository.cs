@@ -40,15 +40,15 @@ namespace webapi.Data.Repo
             return userList.ToList();
         }
 
-        public async void addUser(User user)
+        public async Task<int> addUser(User user)
         {
             const string query = @"
                 insert into users
                 (username, password_hashed, password_key, password, email)
-                values (@username, @passwordHashed, @passwordKey, 'deb', 'test@test.de')
+                values (@Username, @PasswordHashed, @PasswordKey, @Password, @Email)
                 ";
 
-            await _dbConnection.ExecuteAsync(query, user);
+            return await _dbConnection.ExecuteAsync(query, user);
         }
     }
 }

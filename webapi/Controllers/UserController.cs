@@ -42,8 +42,12 @@ namespace webapi.Controllers
             if (await UserExists(loginReq.Username))
                 return BadRequest("User already exists, please try something else");
 
-            Register(loginReq.Username!, loginReq.Password!);
-            return StatusCode(201);
+            var created = await Register(loginReq.Username!, loginReq.Password!);
+
+            if (created == 1)
+                return StatusCode(201);
+            else
+                return StatusCode(500);
         }
 
         [HttpGet("get/{username}")]
@@ -81,7 +85,7 @@ namespace webapi.Controllers
             return false;
         }
 
-        private void Register(string username, string password)
+        private async Task<int> Register(string username, string password)
         {
             byte[] passwordHash, passwordKey;
             using (var hmac = new HMACSHA256())
@@ -94,8 +98,12 @@ namespace webapi.Controllers
             user.Username = username;
             user.PasswordHashed = passwordHash;
             user.PasswordKey = passwordKey;
+            user.Password = "deb";
+            user.Email = "test@test.de";
+            user.Firstname = "first";
+            user.Lastname = "last";
 
-            _uow.UserRepository.addUser(user);
+            return await _uow.UserRepository.addUser(user);
         }
 
         private async Task<User> Authenticate(string username, string passwordText)
