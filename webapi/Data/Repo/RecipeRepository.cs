@@ -58,13 +58,13 @@ namespace webapi.Data.Repo
             {
                 var groupedRecipe = g.First();
 
-                var tags = g.SelectMany(r => r.Tags).Distinct();
+                var tags = g.SelectMany(r => r.Tags).Where(r => r != null).Distinct();
                 var tagResult = tags?.GroupBy(t => t?.Id).Select(gt =>
                 {
                     return gt.First();
                 });
 
-                var ratings = g.SelectMany(r => r.Ratings).Distinct();
+                var ratings = g.SelectMany(r => r.Ratings).Where(r => r != null).Distinct();
                 var ratingResult = ratings?.GroupBy(ra => ra?.Id).Select(gr =>
                 {
                     return gr.First();
