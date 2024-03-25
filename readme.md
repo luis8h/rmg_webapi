@@ -23,6 +23,12 @@
 -   `cp template.env .env` (and type in db password in .evn file)
 
 
+## staing
+-   `./stage.sh`
+-   go to server and run `docker pull <image-name-with-repo-name-and-tag>`
+-   restart docker containers
+
+
 ## production environment
 
 ### docker-compose
