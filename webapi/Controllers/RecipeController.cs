@@ -86,22 +86,24 @@ namespace webapi.Controllers
         [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)] // for instant refresh after uploading new image
         public IActionResult GetImage(int recipeId)
         {
-            // TODO: make file extension dynamic
+            // TODO: specify valid file extensions (also when uploading)
 
             var folderName = Path.Combine("Resources", "Images", "Recipes");
             var workingDir = Directory.GetCurrentDirectory();
-            var imagePath = Path.Combine(workingDir, folderName, "main_" + recipeId + ".png"); // Assuming JPG extension
+            string imagePath = Path.Combine(workingDir, folderName, "main_" + recipeId + ".*");
 
-            if (!System.IO.File.Exists(imagePath))
-                imagePath = Path.Combine(workingDir, folderName, "main_" + recipeId + ".jpg");
+            string[] matchingFiles = Directory.GetFiles(Path.GetDirectoryName(imagePath)!, Path.GetFileName(imagePath));
+            string firstMatchingFile;
 
-            if (!System.IO.File.Exists(imagePath))
-                imagePath  = Path.Combine("Resources", "Images", "Settings", "default_recipe_main_img.png");
-
-            if (!System.IO.File.Exists(imagePath))
+            if (matchingFiles.Length > 0)
+                firstMatchingFile = matchingFiles[0];
+            else
                 return NotFound(); // Return 404 Not Found if the image doesn't exist
 
-            var imageBytes = System.IO.File.ReadAllBytes(imagePath);
+            if (!System.IO.File.Exists(firstMatchingFile))
+                return NotFound(); // Return 404 Not Found if the image doesn't exist
+
+            var imageBytes = System.IO.File.ReadAllBytes(firstMatchingFile);
             return File(imageBytes, "image/jpeg"); // Return the image as a FileResult
         }
     }
