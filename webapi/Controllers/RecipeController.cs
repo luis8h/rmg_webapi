@@ -26,6 +26,7 @@ namespace webapi.Controllers
         [HttpPost("add")]
         public async Task<IActionResult> AddRecipe(Recipe recipe)
         {
+            recipe.CreatedBy = 1;
             int recipeId = await _uow.RecipeRepository.AddRecipe(recipe);
             if (recipeId == -1) return BadRequest();
             return Ok(new { Id = recipeId });
