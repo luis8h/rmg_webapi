@@ -1,0 +1,15 @@
+
+<databaseChangeLog
+   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.26.xsd">
+
+    <include relativeToChangelogFile="true" labels="v0.0.4" file="./changelog-0.0.4.sql"/>
+
+    <changeSet  author="luis8h" id="tagset:0.0.4" labels="tagset:v0.0.4">
+        <tagDatabase  tag="v0.0.4"/>
+    </changeSet>
+
+</databaseChangeLog>
+

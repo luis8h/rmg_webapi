@@ -9,5 +9,6 @@ namespace webapi.Interfaces
         Task<int> DeleteTagsByRecipeId(int recipeId);
         Task<int> AddTagsByRecipeId(List<Tag> tags, int recipeId);
         Task<int> AddTag(AddTagDto tagDto);
+        Task<int> DeleteTag(int id);
     }
 }

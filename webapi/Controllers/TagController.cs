@@ -34,7 +34,8 @@ namespace webapi.Controllers
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteTag(int id)
         {
-            return Ok();
+            var affectedRows = await _uow.TagRepository.DeleteTag(id);
+            return Ok( new { RowsDeleted = affectedRows } );
         }
 
     }

@@ -44,9 +44,17 @@ namespace webapi.Data.Repo
 
         public async Task<int> AddTag(AddTagDto tagDto)
         {
-            const string query = @"insert into tags (name) values (@name) returning id;";
+            const string query = @"insert into tags (name) values (@Name) returning id;";
             var tagId = await _dbConnection.QuerySingleAsync<int>(query, tagDto);
             return tagId;
+        }
+
+        public async Task<int> DeleteTag(int id)
+        {
+            // TODO: different deleting concept (set as invisible, if later a tag with the same name is created pick up old id)
+            const string query = @"delete from tags where id = @Id";
+            var affectedRows = await _dbConnection.ExecuteAsync(query, new { Id = id });
+            return affectedRows;
         }
     }
 }
