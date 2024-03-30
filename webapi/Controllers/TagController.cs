@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using webapi.Interfaces;
 using webapi.Models.Basic;
+using webapi.Models.Dtos;
 
 namespace webapi.Controllers
 {
@@ -20,6 +21,20 @@ namespace webapi.Controllers
         {
             var tag = await _uow.TagRepository.GetTags();
             return Ok(tag);
+        }
+
+        [HttpPost("add")]
+        public async Task<IActionResult> AddRecipe(AddTagDto tagDto)
+        {
+            int tagId = await _uow.TagRepository.AddTag(tagDto);
+            if (tagId == -1) return BadRequest();
+            return Ok(new { Id = tagId });
+        }
+
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteTag(int id)
+        {
+            return Ok();
         }
 
     }

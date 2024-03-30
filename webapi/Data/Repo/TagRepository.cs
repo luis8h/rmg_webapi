@@ -2,6 +2,7 @@ using Dapper;
 using Npgsql;
 using webapi.Interfaces;
 using webapi.Models.Basic;
+using webapi.Models.Dtos;
 
 namespace webapi.Data.Repo
 {
@@ -39,6 +40,13 @@ namespace webapi.Data.Repo
             const string query = @"delete from recipe_tags where recipe = @recipeId";
             await _dbConnection.ExecuteAsync(query, new { recipeId });
             return 0;
+        }
+
+        public async Task<int> AddTag(AddTagDto tagDto)
+        {
+            const string query = @"insert into tags (name) values (@name) returning id;";
+            var tagId = await _dbConnection.QuerySingleAsync<int>(query, tagDto);
+            return tagId;
         }
     }
 }
