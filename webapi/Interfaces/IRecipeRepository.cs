@@ -9,5 +9,6 @@ namespace webapi.Interfaces
         Task<int> AddRecipe(Recipe recipe);
         Task<int> PutRecipe(Recipe recipe);
         Task<DetailRecipe> GetRecipeById(int recipeId);
+        Task<int> DeleteRecipe(int id);
     }
 }

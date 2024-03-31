@@ -57,6 +57,13 @@ namespace webapi.Controllers
             return Ok(recipe);
         }
 
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteRecipe(int id)
+        {
+            var rowsDeleted = await _uow.RecipeRepository.GetRecipeById(id);
+            return Ok( new { DeletedRows = rowsDeleted } );
+        }
+
         [Route("{recipeId}/upload-image")]
         [HttpPost, DisableRequestSizeLimit]
         public async Task<IActionResult> UploadAsync(int recipeId)

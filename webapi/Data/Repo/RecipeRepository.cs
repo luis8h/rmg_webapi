@@ -151,6 +151,13 @@ namespace webapi.Data.Repo
             }
 
         }
+
+        public async Task<int> DeleteRecipe(int id)
+        {
+            const string query = @"delete from recipes where id = @Id";
+            var affectedRows = await _dbConnection.ExecuteAsync(query, new { Id = id } );
+            return affectedRows;
+        }
     }
 }
 

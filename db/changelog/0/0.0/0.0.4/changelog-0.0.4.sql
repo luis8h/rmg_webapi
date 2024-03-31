@@ -22,7 +22,7 @@ alter table recipe_tags drop constraint recipe_tags_recipe_fkey;
 -- changeset luis8h:0.0.4:4
 alter table recipe_tags
 add constraint recipe_tags_recipe_fkey
-    foreign key (recipe) references recipe(id)
+    foreign key (recipe) references recipes(id)
     on delete cascade;
 -- rollback alter table recipe_tags drop constraint recipe_tags_recipe_fkey
 
@@ -35,7 +35,7 @@ alter table ratings drop constraint fk_recipe;
 -- changeset luis8h:0.0.4:6
 alter table ratings
 add constraint ratings_recipe_fkey
-    foreign key (recipe) references recipe(id)
+    foreign key (recipe) references recipes(id)
     on delete cascade;
 -- rollback alter table recipe_tags drop constraint recipe_tags_recipe_fkey
 
