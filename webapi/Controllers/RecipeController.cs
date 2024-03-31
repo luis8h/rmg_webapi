@@ -60,7 +60,7 @@ namespace webapi.Controllers
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteRecipe(int id)
         {
-            var rowsDeleted = await _uow.RecipeRepository.GetRecipeById(id);
+            var rowsDeleted = await _uow.RecipeRepository.DeleteRecipe(id);
             return Ok( new { DeletedRows = rowsDeleted } );
         }
 
