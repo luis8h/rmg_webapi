@@ -48,4 +48,6 @@ git add .
 git commit -m "release: ${VERSION}"
 git push
 git tag $VERSION
+git push origin $VERSION
+
 
