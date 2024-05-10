@@ -4,6 +4,7 @@ using webapi.Interfaces;
 using webapi.Models.Basic;
 using webapi.Models.Dtos;
 using webapi.Models.Extended;
+using webapi.Services;
 
 namespace webapi.Controllers
 {
@@ -76,11 +77,18 @@ namespace webapi.Controllers
 
             if (file.Length > 0)
             {
-                var fileName = "main_" + recipeId + Path.GetExtension(file.FileName);
+                var fileName = "main_" + recipeId + ".webp";
+                var fileNameOriginal = "original_main_" + recipeId + Path.GetExtension(file.FileName);
                 var fullPath = Path.Combine(pathToSave, fileName);
+                var fullPathOriginal = Path.Combine(pathToSave, fileNameOriginal);
 
-                using (var stream = new FileStream(fullPath, FileMode.Create))
+                // saving original file for badup (future changes)
+                using (var stream = new FileStream(fullPathOriginal, FileMode.Create))
                     await file.CopyToAsync(stream);
+
+                // saving compressed image
+                var imageService = new ImageService();
+                await imageService.CompressAndSaveImageAsync(file, fullPath);
 
                 var fileInfo = new FileInfo(fullPath);
                 return Ok(new { Size = fileInfo.Length });

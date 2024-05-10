@@ -8,6 +8,7 @@
 - dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer --version 8.0.2
 - dotnet add package Dapper --version 2.1.35
 - dotnet add package Dapper.FluentMap --version 2.0.0
+- dotnet add package SixLabors.ImageSharp
 
 ## db
 ### liquibase
