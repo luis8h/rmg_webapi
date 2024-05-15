@@ -1,14 +1,19 @@
 # Recipe Manager web API
 
-## dependencies
-[Mapster](https://github.com/MapsterMapper/Mapster) (installed with: dotnet add package Mapster)
+This is a .NET Core webapi connected to a postgresql database which is managed
+with liqubase.
+Note that the commands below might only work on my local setup and are for me
+to remember the commands.
+The project is still in development and by far not finished.
 
+## dependencies
 #### packages:
-- dotnet add package System.IdentityModel.Tokens.Jwt
-- dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer --version 8.0.2
-- dotnet add package Dapper --version 2.1.35
-- dotnet add package Dapper.FluentMap --version 2.0.0
-- dotnet add package SixLabors.ImageSharp
+- ```dotnet add package System.IdentityModel.Tokens.Jwt```
+- ```dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer --version 8.0.2```
+- ```dotnet add package Dapper --version 2.1.35```
+- ```dotnet add package Dapper.FluentMap --version 2.0.0```
+- ```dotnet add package SixLabors.ImageSharp```
+- ```dotnet add package Mapster```
 
 ## db
 ### liquibase
@@ -23,63 +28,12 @@
 -   `git switch <feature_branch_name>` (checkout to remote branch)
 -   `cp template.env .env` (and type in db password in .evn file)
 
-
-## staing
+## staging
 -   `./stage.sh`
 -   go to server and run `docker pull <image-name-with-repo-name-and-tag>`
 -   restart docker containers
 
-
-## production environment
-
-### docker-compose
-
-```
-version: '3.8'
-
-services:
-  rmg_db_pro:
-    image: postgres:latest
-    restart: always
-    container_name: rmg_db_pro
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
-    volumes:
-      - /var/dumps
-      - ./data:/var/lib/postgresql/data
-    env_file:
-      - .env
-    networks:
-      - rmg-network
-    ports:
-      - ${DB_PORT}:5432
-
-  rmg_adminer_pro:
-    image: adminer
-    container_name: rmg_adminer_pro
-    restart: always
-    ports:
-      - ${ADMINER_PORT}:8080
-    env_file:
-      - .env
-    networks:
-      - rmg-network
-
-  rmg_webapi_pro:
-    image: localhost:5000/luis8h/rmg_webapi:v0.0.0
-    restart: always
-    container_name: rmg_webapi_pro
-    ports:
-      - 5297:80
-    networks:
-      - rmg-network
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-      DB_PASSWORD: ${DB_PASSWORD}
-
-networks:
-  rmg-network:
-    driver: bridge
-```
+## create new release
+-   ```./release.sh <new-version>``` eg. ```./release.sh 0.0.6```
+-   go to server and run `docker pull <image-name-with-repo-name-and-tag>`
+-   restart docker containers
